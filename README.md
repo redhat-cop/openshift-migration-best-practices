@@ -40,6 +40,13 @@ The discovery phase section focuses on considerations that should be taken into 
 
 #### Storage
 
+- An intermediate object storage is required to act as a replication repository for the CAM tool to migrate data
+
+- Source and target clusters must have full access to the replication repository
+
+- Create a migration plan to either copy or move the data
+
+
 ### Migration Strategies
 
 #### Stateless Apps - Big Bang migration
