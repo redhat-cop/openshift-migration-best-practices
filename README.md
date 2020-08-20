@@ -10,6 +10,8 @@ The OpenShift Best Practices Guide is meant to assist users who are migrating fr
 
 ## Discovery Phase
 
+The discovery phase section focuses on considerations that should be taken into account when planning a migration including security, routing, and image registry migration. It also explains several of the common strategies and scenarios for migration.
+
 ### Initial Considerations
 
 #### SSL Considerations
@@ -42,10 +44,59 @@ The OpenShift Best Practices Guide is meant to assist users who are migrating fr
 
 #### Stateless Apps - Big Bang migration
 
+Apps are deployed in the 4.x cluster
+(if needed) 4.x router default certificate contains also the 3.x  wildcard SAN
+Each application adds an additional route with the 3.x hostname
+At migration time the 3.x wildcard DNS record is changed to point to the 4.x router VIP
+
 
 ![BigBang](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/stateless-bigbang.png)
 
+#### Stateless Apps - Individual migration
+
+Description:
+Apps are deployed in the 4.x cluster
+(if needed) 4.x router default certificate contains also the 3.x  wildcard SAN
+Each application adds an additional route with the 3.x hostname
+
+(optionally) the route with the 3.x hostname contains an appropriate certificate
+
+For each app, at migration time, a new record is created with the app 3.x fqdn/hostname pointing to the 4.x router VIP. This will take precedence over the 3.x wildcard DNS record.
+
+#### Stateless Apps - Individual canary-release-style migration
+
+Apps are deployed in the 4.x cluster
+(if needed) 4.x router default certificate contains also the 3.x  wildcard SAN
+Each application adds an additional route with the 3.x hostname
+
+(optionally) the route with the 3.x hostname contains an appropriate certificate.
+
+A per app VIP/proxy is created with two backends: the 3.x router VIP and the 4.x router VIP.
+
+For each app, at migration time, a new record is created with the app 3.x fqdn/hostname pointing to the VIP/proxy. This will take precedence over the 3.x wildcard DNS record.
+
+The proxy entry for that app is configured to route X% of the traffic to the 3.x router VIP and (100-X)% of the traffic to 4.x VIP.
+
+X is gradually moved from 100 to 0.
+
+#### Stateless Apps - Individual audience-based migration
+
+Apps are deployed in the 4.x cluster
+(if needed) 4.x router default certificate contains also the 3.x  wildcard SAN
+Each application adds an additional route with the 3.x hostname
+
+(optionally) the route with the 3.x hostname contains an appropriate certificate.
+
+A per app VIP/proxy is created with two backends: the 3.x router VIP and the 4.x router VIP.
+
+For each app, at migration time, a new record is created with the app 3.x fqdn/hostname pointing to the VIP/proxy. This will take precedence over the 3.x wildcard DNS record.
+
+The proxy entry for that app is configured to route traffic matching a given header pattern (e.g.: test customers) of the traffic to the 4.x router VIP and the rest of the traffic to 3.x VIP. More and more cohorts of customers are moved to the 4.x VIP through waves, until all the customers are on the 4.x VIP.
+
+
+
 ## OCP3 and OCP4 Cluster Health Checks
+
 
 
 ## Migration Toolkit for Containers pre-migration testing
