@@ -42,7 +42,7 @@ The OpenShift Best Practices Guide is meant to assist users who are migrating fr
 #### Stateless Apps - Big Bang migration
 
 
-
+![BigBang](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/stateless-bigbang.png)
 
 ## OCP3 and OCP4 Cluster Health Checks
 
