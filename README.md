@@ -2,10 +2,11 @@
 
 The OpenShift Best Practices Guide is meant to assist users who are migrating from OpenShift 3 to OpenShift 4. It is broken down into 5 sections:
 
- 1. Discovery Phase
- 2. Initiatl Considerations
- 3. OpenShift 3 and 4 Cluster Health Checks
- 4. Migration Toolkit for Container
+ 1. **Discovery Phase** - Initial considerations and strategies that can be used while migrating.
+ 2. **OpenShift 3 and 4 Cluster Health Checks** - Helpful metrics to check prior to migrating.
+ 3. **Migration Toolkit for Containers pre-migration testing** - How to test the Migration Toolkit for Containers to establish confidence.
+ 4. **Executing the Migration** - Executing migrations with the Migration Toolkit for Containers.
+ 5. **Troubleshooting** - Common troubleshooting tasks.
 
 ## Discovery Phase
 
@@ -47,7 +48,7 @@ The OpenShift Best Practices Guide is meant to assist users who are migrating fr
 ## OCP3 and OCP4 Cluster Health Checks
 
 
-## CAM pre-migration testing
+## Migration Toolkit for Containers pre-migration testing
 
 
 ## Executing the migration (best practices)
