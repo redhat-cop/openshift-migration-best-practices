@@ -1,5 +1,3 @@
-# openshift-migration-best-practices
-
 The OpenShift Best Practices Guide is meant to assist users who are migrating from OpenShift 3 to OpenShift 4. It is broken down into 5 sections:
 
  1. **Discovery Phase** - Initial considerations and strategies that can be used while migrating.
