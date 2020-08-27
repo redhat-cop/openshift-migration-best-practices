@@ -1,80 +1,89 @@
-The OpenShift Best Practices Guide is meant to assist users who are migrating from OpenShift 3 to OpenShift 4. It is broken down into 5 sections:
+# Best practices for migrating from OpenShift&nbsp;Container&nbsp;Platform&nbsp;3&nbsp;to&nbsp;4
 
- 1. **Discovery Phase** - Initial considerations and strategies that can be used while migrating.
- 2. **OpenShift 3 and 4 Cluster Health Checks** - Helpful metrics to check prior to migrating.
- 3. **Migration Toolkit for Containers pre-migration testing** - How to test the Migration Toolkit for Containers to establish confidence.
- 4. **Executing the Migration** - Executing migrations with the Migration Toolkit for Containers.
- 5. **Troubleshooting** - Common troubleshooting tasks.
+This guide provides recommendations and best practices for migrating from OpenShift Container Platform 3.9+ to OpenShift 4.x with the Migration Tookit for Containers (MTC). The recommendations are organized into the following sections:
 
-## Discovery Phase
+1. **[Planning](#planning)**: Considerations and strategies to review while planning the migration
+2. **[Cluster health checks](#cluster-health-checks)**: Metrics to check before migration
+3. **[Pre-migration testing](#pre-migration-testing)**: Testing the migration plan before running the actual migration
+4. **[Running the migration](#running-the-migration)**: Best practices for running the migration
+5. **[Troubleshooting](#troubleshooting)**: Common troubleshooting tasks
 
-The discovery phase section focuses on considerations that should be taken into account when planning a migration including security, routing, and image registry migration. It also explains several of the common strategies and scenarios for migration.
+## Planning
 
-### Initial Considerations
+This section focuses on considerations to take into account when you plan your migration.
 
-#### SSL Considerations
+### Source environment
 
-- Termination Type
-  - Passthrough
-  - Edge
-    - Minimal amount as this is managed by the cluster by default
-  - Reencrypt
-    - Where is the certificate originating?
-     - Corporate CA
-     - Self-Signed
-  - Update to routes
-- Certificate Consumption
-  - Reading PEM files
-  - Embedded Certificates
+The following considerations apply to the OpenShift 3 source environment.
+
+#### TLS
+
+* Termination types
+  * Passthrough
+  * Edge
+    * Minimal amount as this is managed by the cluster by default
+  * Re-encryption
+    * Where does the certificate originate?
+    * Corporate CA
+    * Self-signed certificates
+  * Update to routes
+* CA certificates
+  * Reading PEM files
+  * Embedded certificates
 
 #### Routing
-  - Traffic traversal between clusters
 
-#### External Dependencies
-  - Ingress/Egress
+* Traffic traversal between clusters
+
+#### External dependencies
+
+* Ingress/Egress
 
 #### Images
-  - Migration of OpenShift's Internal Registry
+
+* Migrating the internal image registry
+* Prune the image registry before migration
+* TBD: unknown blog error in registry
 
 #### Storage
 
-- An intermediate object storage is required to act as a replication repository for the CAM tool to migrate data
+* An intermediate object storage is required to act as a replication repository for the CAM tool to migrate data
+* Source and target clusters must have full access to the replication repository
+* Create a migration plan to copy or move the data
+* TBD: Velero does not over-write objects in source environment. Link to Velero documentation.
 
-- Source and target clusters must have full access to the replication repository
+### Target environment
 
-- Create a migration plan to either copy or move the data
+The following considerations apply to the OpenShift 4 target environment.
 
+* Creating namespaces before migration is problematic because it can cause quotas to change.
 
-### Migration Strategies
+### Migration strategies
 
-#### Stateless Apps - Big Bang migration
+#### Stateless Applications * Big Bang migration
 
-Apps are deployed in the 4.x cluster
-(if needed) 4.x router default certificate contains also the 3.x  wildcard SAN
-Each application adds an additional route with the 3.x hostname
-At migration time the 3.x wildcard DNS record is changed to point to the 4.x router VIP
-
+* Applications are deployed in the 4.x cluster.
+* If necessary, the 4.x router default certificate includes the 3.x wildcard SAN.
+* Each application adds an additional route with the 3.x hostname.
+* At migration, the 3.x wildcard DNS record is changed to point to the 4.x router VIP.
 
 ![BigBang](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/stateless-bigbang.png)
 
-#### Stateless Apps - Individual migration
+#### Stateless Applications * Individual migration
 
-Description:
-Apps are deployed in the 4.x cluster
-(if needed) 4.x router default certificate contains also the 3.x  wildcard SAN
-Each application adds an additional route with the 3.x hostname
-
-(optionally) the route with the 3.x hostname contains an appropriate certificate
+* Applications are deployed in the 4.x cluster
+* If necessary, the 4.x router default certificate includes the 3.x wildcard SAN.
+* Each application adds an additional route with the 3.x hostname.
+* Optional: The route with the 3.x hostname contains an appropriate certificate.
 
 For each app, at migration time, a new record is created with the app 3.x fqdn/hostname pointing to the 4.x router VIP. This will take precedence over the 3.x wildcard DNS record.
 
-#### Stateless Apps - Individual canary-release-style migration
+#### Stateless Applications * Individual canary-release-style migration
 
-Apps are deployed in the 4.x cluster
-(if needed) 4.x router default certificate contains also the 3.x  wildcard SAN
-Each application adds an additional route with the 3.x hostname
-
-(optionally) the route with the 3.x hostname contains an appropriate certificate.
+* Applications are deployed in the 4.x cluster
+* If necessary, the 4.x router default certificate includes the 3.x wildcard SAN.
+* Each application adds an additional route with the 3.x hostname.
+* Optional: The route with the 3.x hostname contains an appropriate certificate.
 
 A per app VIP/proxy is created with two backends: the 3.x router VIP and the 4.x router VIP.
 
@@ -84,13 +93,12 @@ The proxy entry for that app is configured to route X% of the traffic to the 3.x
 
 X is gradually moved from 100 to 0.
 
-#### Stateless Apps - Individual audience-based migration
+#### Stateless Applications * Individual audience-based migration
 
-Apps are deployed in the 4.x cluster
-(if needed) 4.x router default certificate contains also the 3.x  wildcard SAN
-Each application adds an additional route with the 3.x hostname
-
-(optionally) the route with the 3.x hostname contains an appropriate certificate.
+* Applications are deployed in the 4.x cluster
+* If necessary, the 4.x router default certificate includes the 3.x wildcard SAN.
+* Each application adds an additional route with the 3.x hostname.
+* Optional: The route with the 3.x hostname contains an appropriate certificate.
 
 A per app VIP/proxy is created with two backends: the 3.x router VIP and the 4.x router VIP.
 
@@ -98,16 +106,13 @@ For each app, at migration time, a new record is created with the app 3.x fqdn/h
 
 The proxy entry for that app is configured to route traffic matching a given header pattern (e.g.: test customers) of the traffic to the 4.x router VIP and the rest of the traffic to 3.x VIP. More and more cohorts of customers are moved to the 4.x VIP through waves, until all the customers are on the 4.x VIP.
 
+## Cluster health checks
 
 
-## OCP3 and OCP4 Cluster Health Checks
+## Pre-migration testing
 
 
-
-## Migration Toolkit for Containers pre-migration testing
-
-
-## Executing the migration (best practices)
+## Running the migration
 
 
 ## Troubleshooting
