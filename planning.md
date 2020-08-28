@@ -23,6 +23,12 @@ The following are processed in a migration:
 * Internal Images
     * Internal images such as the result of `s2i` builds will be processed during a migration.  Each ImageStream reference in a given namespace will be copied to the destination cluster's registry.
 
+## When to use MTC
+
+In an ideal scenario migrating an application from one cluster to another would be a redeploy of the application from a pipeline and perhaps copy of persistent volume data.  For many situations this may not be sufficient as a running application on the cluster may have had adhoc changes done to it over some period of time and it's drifted from the initial deploy.  MTC is designed to handle those cases when a user is not sure exactly what is in a namespace and they want the entire contents migrated to a new cluster.
+
+Our general recommendation is if it's possible to redeploy your application from a pipeline proceed with that option, if not leverage MTC 
+
 ## Alternative Tools in Upstream
 
 In addition to MTC, there are 2 tools in upstream which may be of interest for larger scale migrations to help only with migration of PVs and Images.
