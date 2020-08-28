@@ -38,9 +38,7 @@ If these tools are used, they would be leveraged by:
         disable_image_migration: true
         disable_pv_migration: true
         ```
-1. Execute `pvc-migrate` and/or `imagestream-migrate` as per upstream documentation 
-
-it is expected that MTC would be run in a configuration of skipping processing of pvs/images and the alternative tools would be run
+1. Execute `pvc-migrate` and/or `imagestream-migrate` as per upstream documentation it is expected that MTC would be run in a configuration of skipping processing of pvs/images and the alternative tools would be run
 
 ### When to consider using alternative tools vs MTC
 
