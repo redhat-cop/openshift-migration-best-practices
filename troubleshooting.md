@@ -17,5 +17,27 @@ Work In Progress for a flowchart
 
 ## Note on labels applied to help track what was migrated
 
+# How to remove MTC Operator and clean up cluster scoped resources
+1. Remove the 'MigrationController' Custom Resource so the Operator cleans up resources it provisioned 
+    * `oc delete migrationncontroller $resourcename`
+      * Wait for the operator to finish cleaning up the resources it owns 
+2. Remove the Migration Operator
+    * For OLM installs
+      1. Uninstall the operator via OLM
+      2. `oc delete ns openshift-migration`
+    * For OCP 3.x installs
+      * Refer to the 'operator.yml' used to instantiate the operator
+        * `oc delete -f operator.yml` 
+          * Alternatively remove the resources inside of the 'openshift-migration' namespace
+3. Remove cluster scopes resources
+```
+  oc get crds | grep 'migration.openshift.io' | awk '{print $1}' | xargs -I{} oc delete crd {}
+  oc get crds | grep velero | awk '{print $1}' | xargs -I{} oc delete crd {}
+  oc get clusterroles | grep 'migration.openshift.io' | awk '{print $1}' | xargs -I{} oc delete clusterrole {}
+  oc get clusterroles | grep velero | awk '{print $1}' | xargs -I{} oc delete clusterrole {}
+  oc get clusterrolebindings | grep 'migration.openshift.io' | awk '{print $1}' | xargs -I{} oc delete clusterrolebindings {}
+  oc get clusterrolebindings | grep velero | awk '{print $1}' | xargs -I{} oc delete clusterrolebindings {}
+```
+
 Prev Section: [Running the migration](./running-the-migration.md)<br>
 [Home](./README.md)
