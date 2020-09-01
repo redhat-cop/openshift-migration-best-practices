@@ -61,7 +61,7 @@ If these tools are used, they would be leveraged by:
     * Serial processing: MTC processes 1 Plan at a time and 1 Backup/Restore operation at a time
         * MTC plans to address this in future to allow parallel execution
             * Related to future contributions in Velero via [velero-#487](https://github.com/vmware-tanzu/velero/issues/487) 
-        * Parallel PV and/or Image migrations are possible using pvc-migrate / imagestream-migrate
+        * Parallel Image migrations are possible using imagestream-migrate
     * Double copy:  Each MTC migration consists of at least 2 copy operations:  Backup copy and Restore copy
         * Alternative tools are a direct single copy from source to target, they don't need to do the 2-step backup/restore process.
     * Ease of debugging/customizing behavior
