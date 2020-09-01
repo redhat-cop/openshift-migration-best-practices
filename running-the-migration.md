@@ -24,15 +24,15 @@ For some scenarios it may be desired to instruct MTC to skip processing a specif
 
 * 'disable_pv_migration':  skips PV migration when `true`
 * 'disable_image_migration': skips Image migration when `true`
-* 'exluded_resources': a list of Group,Version,Kinds to skip, each entry is a specific GVK to skip processing
+* 'excluded_resources': a list of Group,Version,Kinds to skip, each entry is a specific GVK to skip processing
 
 An example:
 ```
 $ oc edit migrationcontroller -n openshift-migration
 
-disable_image_migration: true 
-disable_pv_migration: true 
-excluded_resources: 
+disable_image_migration: true
+disable_pv_migration: true
+excluded_resources:
 - imagetags
 - templateinstances
 
@@ -43,8 +43,8 @@ excluded_resources:
     * Recommendation is to create smaller Plans when possible, would consider bumping limits only for cases when a large Plan is required perhaps because of a large single namespace or need to group several namespaces together for dependencies.
         ```
         $ oc edit migrationcontroller -n openshift-migration
-        mig_pv_limit: 100 
-        mig_pod_limit: 100 
+        mig_pv_limit: 100
+        mig_pod_limit: 100
         mig_namespace_limit: 10
         ```
 
@@ -75,7 +75,7 @@ If an application is using an OpenShift Route the resource will be migrated to t
 
 If the Route has the annotation `openshift.io/host.generated` set then the [openshift-velero-plugin/route plugin](https://github.com/konveyor/openshift-velero-plugin/blob/master/velero-plugins/route/restore.go) will strip the host field so it is recreated using the target clusters configuration.   
 
-For other cases, where `openshift.io/host.generated` is _not_ set the Route will be migrated as-is using whatever information was used from the source cluster. 
+For other cases, where `openshift.io/host.generated` is _not_ set the Route will be migrated as-is using whatever information was used from the source cluster.
 
 ### Namespaces on target cluster
 
@@ -83,7 +83,7 @@ For each namespace you are migrating from the source cluster it is expected that
 
 ### Preserving UID/SELinux from source to target
 
-When a pod is running on a source cluster and is then migrated to a target cluster we want to preserve the same UID it was running as so persistent volume data retains expected privileges when remounted and accessed on the target. 
+When a pod is running on a source cluster and is then migrated to a target cluster we want to preserve the same UID it was running as so persistent volume data retains expected privileges when remounted and accessed on the target.
 
 MTC approaches this by ensuring the annotations in the namespace are recreated from source to target
 ```
@@ -176,5 +176,9 @@ Note, 'Final Migrations' may be quiesced where the source namespace has all mana
             * Be aware of further requirements per cloud provider such as each cluster existing in same region or perhaps even data center.
     * Filesystem copy:
         * A general purpose means of leveraging Velero's Restic integration to perform a filesystem level copy of data from a source persistent volume to object storage, then later copying from object storage to destination cluster.
-  
 
+
+Prev Section: [Pre-migration testing](./pre-migration-testing.md)<br>
+Next Section: [Troubleshooting](./troubleshooting.md)<br>
+[Home](./README.md)
+  
