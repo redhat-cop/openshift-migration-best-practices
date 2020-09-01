@@ -15,3 +15,7 @@ olm_managed: true
 ```
 olm_managed: false
 ```
+
+Prev Section: [Cluster health checks](./cluster-health-checks.md)<br>
+Next Section: [Running the migration](./running-the-migration.md)<br>
+[Home](./README.md)
