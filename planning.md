@@ -11,7 +11,7 @@ MTC performs migrations via a 2 step process of:
 
 The following are processed in a migration:
 
-* Kubernetes Resources 
+* Kubernetes Resources
     * All namespaced resources are processed, including Custom Resources.  MTC performs a dynamic discovery of all API resources in each referenced namespace.
     * Some cluster scoped resources are processed.  If a namespaced resource references a cluster scoped resource it will be processed.  For example this would include: Persistent Volumes bound to a Persistent Volume Claim, Cluster Role Bindings, and Security Context Constraints
 * Persistent Volume data
@@ -27,7 +27,7 @@ The following are processed in a migration:
 
 In an ideal scenario migrating an application from one cluster to another would be a redeploy of the application from a pipeline and perhaps copy of persistent volume data.  For many situations this may not be sufficient as a running application on the cluster may have had adhoc changes done to it over some period of time and it's drifted from the initial deploy.  MTC is designed to handle those cases when a user is not sure exactly what is in a namespace and they want the entire contents migrated to a new cluster.
 
-Our general recommendation is if it's possible to redeploy your application from a pipeline proceed with that option, if not leverage MTC 
+Our general recommendation is if it's possible to redeploy your application from a pipeline proceed with that option, if not leverage MTC
 
 ## Alternative Tools in Upstream
 
@@ -60,7 +60,7 @@ If these tools are used, they would be leveraged by:
  * Considerations of MTC vs alternative tools
     * Serial processing: MTC processes 1 Plan at a time and 1 Backup/Restore operation at a time
         * MTC plans to address this in future to allow parallel execution
-            * Related to future contributions in Velero via [velero-#487](https://github.com/vmware-tanzu/velero/issues/487) 
+            * Related to future contributions in Velero via [velero-#487](https://github.com/vmware-tanzu/velero/issues/487)
         * Parallel PV and/or Image migrations are possible using pvc-migrate / imagestream-migrate
     * Double copy:  Each MTC migration consists of at least 2 copy operations:  Backup copy and Restore copy
         * Alternative tools are a direct single copy from source to target, they don't need to do the 2-step backup/restore process.
@@ -162,3 +162,6 @@ A per app VIP/proxy is created with two backends: the 3.x router VIP and the 4.x
 For each app, at migration time, a new record is created with the app 3.x fqdn/hostname pointing to the VIP/proxy. This will take precedence over the 3.x wildcard DNS record.
 
 The proxy entry for that app is configured to route traffic matching a given header pattern (e.g.: test customers) of the traffic to the 4.x router VIP and the rest of the traffic to 3.x VIP. More and more cohorts of customers are moved to the 4.x VIP through waves, until all the customers are on the 4.x VIP.
+
+Next Section: [Cluster health checks](./cluster-health-checks.md)<br>
+[Home](./README.md)
