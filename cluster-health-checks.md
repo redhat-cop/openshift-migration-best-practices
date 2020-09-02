@@ -1,5 +1,8 @@
-# Cluster Health Checks
+[![Home](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/home.png)](./README.md)
 
-Prev Section: [Planning](./planning.md)<br>
-Next Section: [Pre-migration testing](./pre-migration-testing.md)<br>
-[Home](./README.md)
+[Home] | [Planning](./planning.md) > Cluster health checks > [Premigration testing](./premigration-testing.md)
+
+---
+# Cluster health checks
+
+
