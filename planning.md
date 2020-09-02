@@ -1,3 +1,5 @@
+[![Home](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/home.png)](./README.md) | [> Cluster health checks](./running-the-migration.md)
+---
 # Planning
 
 This section focuses on considerations to take into account when you plan your migration.

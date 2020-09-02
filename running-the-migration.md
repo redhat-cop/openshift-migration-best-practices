@@ -1,8 +1,10 @@
-# Running the Migration
+[![Home](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/home.png)](./README.md) [Premigration testing <](./premigration-testing.md) | [> Troubleshooting](./troubleshooting.md)
+---
+# Running the migration
 
-## Pre-req considerations
+## Preliminary considerations
 
-### Resource needs
+### Resource requirements
 * Be aware of how much room is required for PV data and Images, if copying to Object Storage ensure sufficient room
 * Depending on the number of resources in each namespace you may need to increase the cpu and memory limits for the migration controller.  Settings are adjusted via the 'MigrationController' custom resource on the host cluster
     ```
@@ -14,9 +16,9 @@
 
 
 ### Pruning
+
 * Run `oc adm prune` prior to a migration to remove unneeded 'builds', 'depoyments', and 'images' in each source namespace
     * https://docs.openshift.com/container-platform/3.11/admin_guide/pruning_resources.html
-
 
 ### Skip processing of specific resource types
 
@@ -48,7 +50,7 @@ excluded_resources:
         mig_namespace_limit: 10
         ```
 
-### Quota
+### Quotas
 
 When Quotas are in place on source/target cluster the below should be considered:
 * Migrations on the source cluster will create temporary 'Stage' pods per PV being copied, you may need to increase quota to allow these to succeed.
@@ -58,7 +60,7 @@ When Quotas are in place on source/target cluster the below should be considered
     * Related: [MIG-203 - Handle ResourceQuotas when changing storageclasses, allow for possibility of keys changing](https://issues.redhat.com/browse/MIG-203)
 
 
-### Deprecated APIs from Source to Target
+### Deprecated APIs
 
 Be aware that when migrating applications between clusters that are different versions or even just have different capabilities, it is possible to run into situations where the source cluster has an API being used which is not present in the target cluster.  MTC will attempt to perform a Group,Version,Kind comparison of source and target cluster and warn of potential issues.  If problems are found, those impacted resources will be noted on the MigPlan custom resource and will be excluded from the migration.
 
