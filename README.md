@@ -5,6 +5,6 @@ This guide provides recommendations and best practices for migrating from OpenSh
 
 1. **[Planning](./planning.md)**: Considerations and strategies to review while planning the migration
 2. **[Cluster health checks](./cluster-health-checks.md)**: Metrics to check before migration
-3. **[Pre-migration testing](./pre-migration-testing.md)**: Testing the migration plan before running the actual migration
+3. **[Premigration testing](./pre-migration-testing.md)**: Testing the migration plan before running the actual migration
 4. **[Running the migration](./running-the-migration.md)**: Best practices for running the migration
 5. **[Troubleshooting](./troubleshooting.md)**: Common troubleshooting tasks
