@@ -102,7 +102,7 @@ The following considerations apply to the OpenShift 3 source environment.
 
 * Migrating the internal image registry
 * Prune the image registry before migration
-* TBD: unknown blog error in registry
+* TBD: unknown blob error in registry (perhaps related to NFS)
 
 ### Storage
 
