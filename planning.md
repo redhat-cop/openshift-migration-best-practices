@@ -1,4 +1,4 @@
-[![Home](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/home.png)](./README.md) | [> Cluster health checks](./running-the-migration.md)
+[![Home](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/home.png)](./README.md) | [> Cluster health checks](./cluster-health-checks.md)
 ---
 # Planning
 
