@@ -1,4 +1,4 @@
-# Pre-Migration Testing
+# Premigration Testing
 
 ## Ensure same version of MTC on all clusters
 
