@@ -173,7 +173,7 @@ Note, 'Final Migrations' may be quiesced where the source namespace has all mana
     * Recommendation:  Ensure you have a backup of data prior to migrating as if your application misbehaves after migration the PV data may be corrupted.
 * Copy:  Snapshot or Filesystem copy of persistent volume data
     * Snapshot
-        * For storage providers which have a configured velero volumen snapshotter plugin a snapshot may be possible.
+        * For storage providers which have a configured velero volume snapshotter plugin a snapshot may be possible.
         * Generally cloud storage such as AWS, Azure, Google
             * Be aware of further requirements per cloud provider such as each cluster existing in same region or perhaps even data center.
     * Filesystem copy:
