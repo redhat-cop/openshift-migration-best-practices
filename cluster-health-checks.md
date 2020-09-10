@@ -11,7 +11,7 @@
 
 ## Additional checks
 
-
+[Install and configure the Prometheus Cluster Monitoring stack](https://docs.openshift.com/container-platform/4.5/monitoring/cluster_monitoring/configuring-the-monitoring-stack.html) to ensure that your clusters are healthy before the migration.
 
 What is the compute and memory utilization of the cluster?
 Command: `oc adm top node`
