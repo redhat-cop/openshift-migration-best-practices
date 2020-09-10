@@ -1,4 +1,4 @@
-[![Home](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/home.png)](./README.md) | [> Cluster health checks](./cluster-health-checks.md)
+[![Home](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/home.png) <](./README.md) | [> Cluster health checks](./cluster-health-checks.md)
 ---
 # Planning
 
@@ -7,7 +7,7 @@ This section focuses on considerations to take into account when you plan your m
 * **[Migration tools](#migration-tools)**:
   * [Migration Toolkit for Containers](#migration-toolkit-for-containers)
   * [Upstream migration tools](#upstream-migration-tools)
-  * When to consider using alternative tools vs MTC
+  * [Upstream tools vs MTC](#upstream-tools-vs-mtc)
 * **[Migration environment considerations](#migration-environment-considerations)**:
   * **[OpenShift 3](#openshift-3)**: Aspects of the OpenShift 3 source environment that might affect migration
   * **[OpenShift 4](#openshift-4)**: Aspects of the OpenShift 4 target environment that might affect migration
@@ -19,7 +19,7 @@ This section focuses on considerations to take into account when you plan your m
 
 The Migration Toolkit for Containers (MTC) migrates an application workload, including  Kubernetes resources, data, and images, from an OpenShift 3 source cluster to an OpenShift 4 target cluster.
 
-The migration has two stages:
+MTC performs the migration in two stages:
 
 1. The application workload is backed up from the source cluster to object storage.
 2. The application workload is restored to the target cluster from object storage.
@@ -34,10 +34,18 @@ MTC migrates some cluster-scoped resources. If a namespaced resource references 
 
 MTC has two options for migrating persistent volume data:
 
-* **Move**: If the remote storage is accessible to the source and target clusters, you can ‘move’ the PV definition from the source cluster to target cluster. This is the fastest method for migrating PV data. This method is suitable for NFS.
+* **Move**: If the remote storage is accessible to the source and target clusters, you can ‘move’ the PV definition from the source cluster to target cluster. 
+  
+  This is the fastest method for migrating PV data. This method is suitable for NFS.
+
 * **Copy**: MTC has two options for copying PV data:
-  * **Snapshot**: If your storage provider supports snapshots and if you have configured a Velero VolumeSnapshotPlugin, you can create a snapshot of the volume. Snapshot copying has specific requirements such as a common cloud vendor, common region, and common storage class. AWS, Google Cloud Provider, and Microsoft Azure support the snapshot copy method. 
-  * **Filesystem**: For all other storage use cases, the data is migrated by copying the file system. This mechanism supports changing storage classes in a migration and has the most flexibility.
+  * **Snapshot**: If your storage provider supports snapshots and if you have configured a Velero VolumeSnapshotPlugin, you can create a snapshot of the volume. 
+    
+    Snapshot copying has specific requirements such as a common cloud vendor, common region, and common storage class. AWS, Google Cloud Provider, and Microsoft Azure support the snapshot copy method. 
+
+  * **Filesystem**: For all other storage use cases, the data is migrated by copying the file system.
+    
+    This method allows you to change storage classes in a migration and provides the most flexibility.
 
 **Migrating internal images**
 
@@ -61,12 +69,12 @@ If you can redeploy your application from pipeline, that is the best option. If 
 
 There are upstream tools that you can use for large-scale migrations of PVs or images:
 
-* `pvc-migrate`: https://github.com/konveyor/pvc-migrate
-* `imagestream-migrate`: https://github.com/konveyor/imagestream-migrate
+* [`pvc-migrate`](https://github.com/konveyor/pvc-migrate)
+* [`imagestream-migrate`](https://github.com/konveyor/imagestream-migrate)
 
 The upstream tools have the advantages of being smaller, more focused tools. Because they use a combination of Ansible playbooks, Python code snippets, [Rsync](https://rsync.samba.org/), and [Skopeo](https://github.com/containers/skopeo), they are easier to configure and debug than the Golang-based Kubernetes controllers used by MTC.
 
-It is possible to use the upstream tools with MTC:
+You can combine the upstream tools and MTC for migration in a process that resembles the following procedure:
 
 1. Configure MTC to omit PVs and images from the migration plan by setting the following parameters in the Migration Controller manifest:
   ```
@@ -75,30 +83,32 @@ It is possible to use the upstream tools with MTC:
   ```
 2. Migrate the application workload with MTC.
 
-3. Run `pvc-migrate` or `imagestream-migrate` to migrate the PVs or images.
+3. Run `pvc-migrate` to migrate PVs or `imagestream-migrate` images.
 
-### When to consider using alternative tools vs MTC
+### Upstream tools vs MTC
 
- * Large scale migrations
-  * ~50+ ImageStreams per Namespace
-  * Multiple ~100GB+ Persistent Volumes to be copied
+Upstream tools can perform large-scale migrations much faster than MTC if the migration environment meets tool requirements.
 
- * Requirements for alternative tools
-  * Direction connection available between source and target cluster, i.e. a process on each Node of the source cluster is able to connect to an exposed Route on the target cluster.
-  * The host executing pvc-migrate has root ssh access to each Node of the source cluster
-  * For pvc-migrate, OCS 3 -> OCS 4 is the only supported path.  No other storage providers are implemented.
+The following environment is an example of a large-scale migration:
 
- * Considerations of MTC vs alternative tools
-    * Serial processing: MTC processes 1 Plan at a time and 1 Backup/Restore operation at a time
-        * MTC plans to address this in future to allow parallel execution
-            * Related to future contributions in Velero via [velero-#487](https://github.com/vmware-tanzu/velero/issues/487) 
-        * Parallel Image migrations are possible using imagestream-migrate
-    * Double copy:  Each MTC migration consists of at least 2 copy operations:  Backup copy and Restore copy
-        * Alternative tools are a direct single copy from source to target, they don't need to do the 2-step backup/restore process.
-    * Ease of debugging/customizing behavior
-        * MTC is a collection of golang Kubernetes controllers working together to orchestrate Velero to perform a series of Backup and Restore operations.  Debugging a failure may be challenging, it can span different clusters, namespaces, and controller logs.  In addition, customizing MTC behavior requires golang updates and recompiling code and updating the operator to deliver.
-        * Alternative tools leverage Ansible, a small amount of python snippets when essential, and standard tools of rsync and skopeo.  Users are more likely to have a familiarity with Ansible and be able to debug problems and/or customize behavior as they need.
-            * An example we've seen in past has been when doing large migrations at scale and running into filesystem corruption issues.  Leveraging `pvc-migrate` with rsync, it is fairly easy to see the rsync error from a corrupted source file and reason through the fix, then address on source volume and re-migrate that PV.  
+* ~50+ ImageStreams per namespace
+* Multiple ~100GB+ persistent volumes
+
+**Upstream tool requirements**
+
+* There must be a direct network connection between the source and target clusters so that a process running on each node of the source cluster can connect to an exposed route on the target cluster.
+* The host running `pvc-migrate` must have root access to each node of the source cluster.
+* `pvc-migrate` can only migrate from OpenShift Container Storage 3 to 4. No other storage providers are implemented.
+
+**Comparison**
+
+| | MTC  | Upstream tools |
+| ------------- | ------------- | ------------- |
+| Processing  | Serial processing. MTC processes one migration plan at a time, one backup/restore operation at a time. (MTC plans to support parallel execution in the future. See [velero-487](https://github.com/vmware-tanzu/velero/issues/487).)  |Parallel processing. `imagestream-migrate` can perform parallel image migrations. |
+| Copying  |Two copy processes: backup and restore  | Single copy process |
+|Debugging   |Challenging to debug. A migration error can span different clusters, namespaces, and controller logs.   |Easier to debug because of Ansible. |
+|Customization   |Difficult to customize. Requires updating and recompiling the Golang code and then updating the MTC Operator to deliver the new version.   |Ansible and Python are easier to customize.  |
+
 
 ## Migration environment considerations
 
