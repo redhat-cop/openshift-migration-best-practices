@@ -7,7 +7,7 @@ This section focuses on considerations to take into account when you plan your m
 * **[Migration tools](#migration-tools)**:
   * [Migration Toolkit for Containers](#migration-toolkit-for-containers)
   * [Upstream migration tools](#upstream-migration-tools)
-  * [Upstream tools vs MTC](#upstream-tools-vs-mtc)
+  * [Comparison of upstream tools and MTC](#comparison-of-upstream-tools-and-mtc)
 * **[Migration environment considerations](#migration-environment-considerations)**:
   * **[OpenShift 3](#openshift-3)**: Aspects of the OpenShift 3 source environment that might affect migration
   * **[OpenShift 4](#openshift-4)**: Aspects of the OpenShift 4 target environment that might affect migration
@@ -85,9 +85,9 @@ You can combine the upstream tools and MTC for migration in a process that resem
 
 3. Run `pvc-migrate` to migrate PVs or `imagestream-migrate` images.
 
-### Upstream tools vs MTC
+### Comparison of upstream tools and MTC
 
-Upstream tools can perform large-scale migrations much faster than MTC if the migration environment meets tool requirements.
+Upstream tools can perform large-scale migrations much faster than MTC if the migration environment meets the tool requirements.
 
 The following environment is an example of a large-scale migration:
 
@@ -107,8 +107,7 @@ The following environment is an example of a large-scale migration:
 | Processing  | Serial processing. MTC processes one migration plan at a time, one backup/restore operation at a time. (MTC plans to support parallel execution in the future. See [velero-487](https://github.com/vmware-tanzu/velero/issues/487).)  |Parallel processing. `imagestream-migrate` can perform parallel image migrations. |
 | Copying  |Two copy processes: backup and restore  | Single copy process |
 |Debugging   |Challenging to debug. A migration error can span different clusters, namespaces, and controller logs.   |Easier to debug because of Ansible. |
-|Customization   |Difficult to customize. Requires updating and recompiling the Golang code and then updating the MTC Operator to deliver the new version.   |Ansible and Python are easier to customize.  |
-
+|Customization   |Difficult to customize. Requires updating and recompiling the Golang code and then updating the MTC Operator to deliver the new version. |Ansible and Python are easier to customize.  |
 
 ## Migration environment considerations
 
