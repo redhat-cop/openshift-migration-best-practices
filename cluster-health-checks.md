@@ -2,53 +2,36 @@
 ---
 # Cluster health checks
 
+## General health
+
+* Install and configure the [Prometheus Cluster Monitoring stack](https://docs.openshift.com/container-platform/4.5/monitoring/cluster_monitoring/configuring-the-monitoring-stack.html).
+* Check the cluster nodes: ` $ oc get nodes`
+* Check the persistent volumes (PVs) on the source cluster: `$ oc get pv`
+  * Mounted PVs
+  * Unmounted PVs
+  * Abnormal configurations
+  * PVs stuck in terminating state
 
 ## Capacity
 
+* Available bandwidth between the source and target clusters:
+  * Less than 10Gbps
+  * 10 Gbps or more
 
+* Amount of data to be migrated between the source and target clusters:
+  * Less than 20 TB
+  * 20 TB or more
 
 ## Performance
 
+* Check cluster compute and memory utilization: `$ oc adm top node`
+* Average response time of API calls in the source cluster:
+  * Less than 50 ms
+  * 50 ms or more
+
 ## Additional checks
 
-[Install and configure the Prometheus Cluster Monitoring stack](https://docs.openshift.com/container-platform/4.5/monitoring/cluster_monitoring/configuring-the-monitoring-stack.html) to ensure that your clusters are healthy before the migration.
-
-What is the compute and memory utilization of the cluster?
-Command: `oc adm top node`
+Do instance types selected for the infrastructure on the target cluster meet the performance recommendations? 
 
 
 
-
-
-
-What is the current node health?
-Command: `oc get nodes`
-
-
-
-
-
-
-What is the average response time from API calls in the source clusters?
-
-<50ms
->50ms
-
-
-Have you checked that the instance types picked for the infrastructure on the target OpenShift Cluster meet the performance recommendations? 
-
-Have you checked the persistent volumes across the OpenShift 3 cluster to determine if they are mounted, not mounted, or have any abnormal configurations?
-Command: `oc get pv`
-
-PVs mounted
-no abnormal configurations
-PVs unmounted
-PVs stuck in terminating
-What is the available bandwidth between source and destination clusters?
-
-10Gbps or greater
-Less than 10Gbps
-How much data is being migrated between the source and destination cluster? 
-
-Less than 20TB
-Great than 20TB
