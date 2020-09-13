@@ -1,4 +1,4 @@
-[![Home](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/home.png) <](./README.md) Planning [> Cluster health checks](./cluster-health-checks.md)
+[![Home](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/home.png) | <](./README.md) Planning [> Cluster health checks](./cluster-health-checks.md)
 ---
 # Planning
 
@@ -6,12 +6,19 @@ This section focuses on considerations to take into account when you plan your m
 
 * **[Migration tools](#migration-tools)**:
   * [Migration Toolkit for Containers](#migration-toolkit-for-containers)
+    - [When to use MTC](#when-to-use-mtc)
+    - [MTC documentation](#mtc-documentation)
   * [Upstream migration tools](#upstream-migration-tools)
-  * [Comparison of upstream tools and MTC](#comparison-of-upstream-tools-and-mtc)
+    - [Comparison of MTC and upstream tools](#comparison-of-mtc-and-upstream-tools)
+    - [Combining MTC and upstream tools](#combining-mtc-and-upstream-tools)
 * **[Migration environment considerations](#migration-environment-considerations)**:
-  * **[OpenShift 3](#openshift-3)**: Aspects of the OpenShift 3 source environment that might affect migration
-  * **[OpenShift 4](#openshift-4)**: Aspects of the OpenShift 4 target environment that might affect migration
+  * [OpenShift 3](#openshift-3): Aspects of the OpenShift 3 source environment that might affect migration
+  * [OpenShift 4](#openshift-4): Aspects of the OpenShift 4 target environment that might affect migration
 * **[Migration strategies](#migration-strategies)**: Strategies for migrating stateless applications
+  - ["Big Bang" migration](#big-bang-migration)
+  - [Individual migration](#individual-migration)
+  - [Individual, canary-style migration](#individual-canary-style-migration)
+  - [Individual, audience-based migration](#individual-audience-based-migration)
 
 ## Migration tools
 
@@ -51,12 +58,6 @@ MTC has two options for migrating persistent volume data:
 
 Internal images created by S2I builds are migrated. Each ImageStream reference in a given namespace is copied to the registry of the target cluster.
 
-**References**
-
-* [MTC prerequisites](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-prerequisites_migrating-3-4)
-* [About MTC](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-understanding-cam_migrating-3-4)
-* [About data copy methods](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-understanding-data-copy-methods_migrating-3-4)
-
 #### When to use MTC
 
 Ideally, you could migrate an application from one cluster to another by redeploying the application from a pipeline and perhaps copying the persistent volume data.  
@@ -65,49 +66,52 @@ However, this might not be possible in the real world. A running application on 
 
 If you can redeploy your application from pipeline, that is the best option. If not, you should use MTC.
 
+#### MTC documentation
+
+* [Prerequisites](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-prerequisites_migrating-3-4)
+* [About MTC](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-understanding-cam_migrating-3-4)
+* [About data copy methods](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-understanding-data-copy-methods_migrating-3-4)
+
 ### Upstream migration tools
 
-There are upstream tools that you can use for large-scale migrations of PVs or images:
+You can migrate PVs with [`pvc-migrate`](https://github.com/konveyor/pvc-migrate) or images with [`imagestream-migrate`](https://github.com/konveyor/imagestream-migrate).
 
-* [`pvc-migrate`](https://github.com/konveyor/pvc-migrate)
-* [`imagestream-migrate`](https://github.com/konveyor/imagestream-migrate)
+These upstream tools offer advantages for large-scale migrations similar to the following example:
 
-The upstream tools have the advantages of being smaller, more focused tools. Because they use a combination of Ansible playbooks, Python code snippets, [Rsync](https://rsync.samba.org/), and [Skopeo](https://github.com/containers/skopeo), they are easier to configure and debug than the Golang-based Kubernetes controllers used by MTC.
+* ~50+ ImageStreams per namespace
+* Multiple ~100GB+ persistent volumes
 
-You can combine the upstream tools and MTC for migration in a process that resembles the following procedure:
+The tools are smaller and more focused. They are based on Ansible playbooks, Python code snippets, [Rsync](https://rsync.samba.org/), and [Skopeo](https://github.com/containers/skopeo), which simplifies customization and debugging. Their performance is better than MTC.
 
-1. Configure MTC to omit PVs and images from the migration plan by setting the following parameters in the Migration Controller manifest:
+#### Comparison of MTC and upstream tools
+
+| | MTC  | Upstream tools |
+| ------------- | ------------- | ------------- |
+| **Processing** |Serial processing.<br><br> MTC processes one migration plan at a time, one backup/restore operation at a time. (MTC plans to support parallel execution in the future. See [velero-487](https://github.com/vmware-tanzu/velero/issues/487).)  |Parallel processing.<br><br> `imagestream-migrate` can perform parallel image migrations. |
+| **Copying** |Two copy processes.<br><br> Backup and restore.  |Single copy process. |
+| **Debugging** |Challenging.<br><br> A migration error can span different clusters, namespaces, and controller logs.   |Relatively easy. <br><br>Tools are based on Ansible and Python. |
+| **Customization** |Difficult. <br><br>Requires updating the Golang code, recompiling, and then updating the MTC Operator to deliver the new version. |Relatively easy. <br><br>Tools are based on Ansible and Python.  |
+
+#### Combining MTC and upstream tools
+
+You can combine upstream tools and MTC for migration in a process that resembles the following procedure.
+
+*Prerequisites*
+
+* Direct network connection between the source and target clusters. A process running on each node of the source cluster must be able to connect to an exposed route on the target cluster.
+* The host running `pvc-migrate` has root access to each node of the source cluster.
+* PVs are being migrated from OpenShift Container Storage 3 to 4. `pvc-migrate` does not support other storage providers.
+
+*Procedure*
+
+1. Configure MTC to omit PVs and/or images from the migration plan by setting the following parameters in the Migration Controller manifest:
   ```
   disable_image_migration: true
   disable_pv_migration: true
   ```
 2. Migrate the application workload with MTC.
 
-3. Run `pvc-migrate` to migrate PVs or `imagestream-migrate` images.
-
-### Comparison of upstream tools and MTC
-
-Upstream tools can perform large-scale migrations much faster than MTC if the migration environment meets the tool requirements.
-
-The following environment is an example of a large-scale migration:
-
-* ~50+ ImageStreams per namespace
-* Multiple ~100GB+ persistent volumes
-
-**Upstream tool requirements**
-
-* There must be a direct network connection between the source and target clusters so that a process running on each node of the source cluster can connect to an exposed route on the target cluster.
-* The host running `pvc-migrate` must have root access to each node of the source cluster.
-* `pvc-migrate` can only migrate from OpenShift Container Storage 3 to 4. No other storage providers are implemented.
-
-**Comparison**
-
-| | MTC  | Upstream tools |
-| ------------- | ------------- | ------------- |
-| Processing  | Serial processing. MTC processes one migration plan at a time, one backup/restore operation at a time. (MTC plans to support parallel execution in the future. See [velero-487](https://github.com/vmware-tanzu/velero/issues/487).)  |Parallel processing. `imagestream-migrate` can perform parallel image migrations. |
-| Copying  |Two copy processes: backup and restore  | Single copy process |
-|Debugging   |Challenging to debug. A migration error can span different clusters, namespaces, and controller logs.   |Easier to debug because of Ansible. |
-|Customization   |Difficult to customize. Requires updating and recompiling the Golang code and then updating the MTC Operator to deliver the new version. |Ansible and Python are easier to customize.  |
+3. Run `pvc-migrate` to migrate PVs and/or `imagestream-migrate` to migrate images.
 
 ## Migration environment considerations
 
@@ -146,70 +150,64 @@ The following considerations apply to the OpenShift 3 source environment.
 
 #### Storage
 
-* An intermediate object storage is required to act as a replication repository for the CAM tool to migrate data
-* Source and target clusters must have full access to the replication repository
-* Create a migration plan to copy or move the data
+* MTC requires an intermediate object storage as a replication repository.
+* Source and target clusters must have full access to the replication repository.
 * TBD: Velero does not over-write objects in source environment. Link to Velero documentation.
 
 ### OpenShift 4
 
 The following considerations apply to the OpenShift 4 target environment:
 
-* Creating namespaces before migration is problematic because it can cause quotas to change.
+* Creating namespaces before migration might cause quota changes.
 
 ## Migration strategies
-
 This section describes migration strategies for stateless applications.
+
+Each migration strategy has the following attributes:
+
+* Applications are deployed on the 4.x cluster.
+* If necessary, the 4.x router default certificate includes the 3.x wildcard SAN.
+* Each application adds an additional route with the 3.x host name.
 
 ### "Big Bang" migration
 
-* Applications are deployed in the 4.x cluster.
-* If necessary, the 4.x router default certificate includes the 3.x wildcard SAN.
-* Each application adds an additional route with the 3.x hostname.
-* At migration, the 3.x wildcard DNS record is changed to point to the 4.x router VIP.
+At migration, the 3.x wildcard DNS record is changed to point to the 4.x router virtual IP address (VIP).
 
 ![BigBang](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/migration-strategy-bigbang.png)
 
 ### Individual migration
 
-* Applications are deployed in the 4.x cluster
-* If necessary, the 4.x router default certificate includes the 3.x wildcard SAN.
-* Each application adds an additional route with the 3.x hostname.
-* Optional: The route with the 3.x hostname contains an appropriate certificate.
+* Optional: The route with the 3.x host name contains an appropriate certificate.
 
-For each app, at migration time, a new record is created with the app 3.x fqdn/hostname pointing to the 4.x router VIP. This will take precedence over the 3.x wildcard DNS record.
+At migration, a new record is created for each application with the 3.x FQDN/host name pointing to the 4.x router VIP. This record takes precedence over the 3.x wildcard DNS record.
 
 ![Individual](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/migration-strategy-individual.png)
 
-### Individual canary-release-style migration
+### Individual, canary-style migration
 
-* Applications are deployed in the 4.x cluster
-* If necessary, the 4.x router default certificate includes the 3.x wildcard SAN.
-* Each application adds an additional route with the 3.x hostname.
-* Optional: The route with the 3.x hostname contains an appropriate certificate.
+* Optional: The route with the 3.x host name contains an appropriate certificate.
 
-A per app VIP/proxy is created with two backends: the 3.x router VIP and the 4.x router VIP.
+A VIP/proxy with two backends, the 3.x router VIP and the 4.x router VIP, is created for each application.
 
-For each app, at migration time, a new record is created with the app 3.x fqdn/hostname pointing to the VIP/proxy. This will take precedence over the 3.x wildcard DNS record.
+At migration, a new record is created for each application with the 3.x FQDN/host name pointing to the VIP/proxy. This record takes precedence over the 3.x wildcard DNS record.
 
-The proxy entry for that app is configured to route X% of the traffic to the 3.x router VIP and (100-X)% of the traffic to 4.x VIP.
+The proxy entry for the application is configured to route `X`% of the traffic to the 3.x router VIP and (100-`X`)% of the traffic to the 4.x VIP.
 
-X is gradually moved from 100 to 0.
+`X` is gradually moved from `100` to `0`.
 
 ![Canary](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/migration-strategy-canary.png)
 
-### Individual audience-based migration
+### Individual, audience-based migration
 
-* Applications are deployed in the 4.x cluster
-* If necessary, the 4.x router default certificate includes the 3.x wildcard SAN.
-* Each application adds an additional route with the 3.x hostname.
-* Optional: The route with the 3.x hostname contains an appropriate certificate.
+* Optional: The route with the 3.x host name contains an appropriate certificate.
 
-A per app VIP/proxy is created with two backends: the 3.x router VIP and the 4.x router VIP.
+A VIP/proxy with two backends, the 3.x router VIP and the 4.x router VIP, is created for each application.
 
-For each app, at migration time, a new record is created with the app 3.x fqdn/hostname pointing to the VIP/proxy. This will take precedence over the 3.x wildcard DNS record.
+At migration, a new record is created for each application with the 3.x FQDN/host name pointing to the VIP/proxy. This record takes precedence over the 3.x wildcard DNS record.
 
-The proxy entry for that app is configured to route traffic matching a given header pattern (e.g.: test customers) of the traffic to the 4.x router VIP and the rest of the traffic to 3.x VIP. More and more cohorts of customers are moved to the 4.x VIP through waves, until all the customers are on the 4.x VIP.
+The proxy entry for the application is configured to route traffic matching a given header pattern, for example, test customers, to the 4.x router VIP and the rest of the traffic to the 3.x VIP.
+
+Traffic is moved to the 4.x VIP in waves until all the traffic is on the 4.x VIP.
 
 ![Audience](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/migration-strategy-audience.png)
 
