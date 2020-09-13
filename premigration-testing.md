@@ -2,45 +2,55 @@
 ---
 # Premigration testing
 
-You are now ready to start using the migration tool to migrate your workloads from OCP3 to OCP4.   The Migration Toolkit for Containers (MTC) is a tool leveraging the Open Source projects Velero and Restic to help you migrate your workloads between clusters.   MTC is available as an Operator and can be easily installed following the steps described in the official OpenShift documentation under the migration section.  
+Install MTC on your source and target clusters:
 
-https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/migrating-application-workloads-3-4.html
+* [Prerequisites](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-prerequisites_migrating-3-4).
+* [Installing MTC](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/deploying-cam-3-4.html). You must install MTC on the source and target clusters.
+* [Configuring a replication repository](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/configuring-replication-repository-3-4.html).
 
-Please refer to the "Migration Tools prerequisite" section for more information on how to get started.
+MTC uses Velero and Restic to back up data from the source cluster to replication repository and to restore data from the replication repository to the target cluster.
 
-After completing the installation of MTC, you should end up with the following architecture.   A replication repository will be required between your clusters to backup and restore your data.   You will also have to configure the credential of your source and destination clusters.   
+![MTC Architecture](./images/mtc-architecture.png)
 
-![Architecture](./images/mtc-architecture.png)
+## Ensuring same MTC versions
 
+The same MTC z-stream version must be installed on the source and target clusters.
 
-## Ensure same version of MTC on all clusters
+Download and re-install the MTC Operator on the OpenShift 3 cluster just before you run a migration to ensure that you have the latest version.
 
-Prior to proceeding with a migration ensure you are using the same version of MTC on all clusters.  It's possible over time that an OLM installed version of MTC may have been updated to pick up latest releases while a previously installed version on an OCP 3 cluster is lagging on an older release.   Ensuring all are on the same version of MTC will yield the best experience.
+The Operator Lifecycle Manager (OLM) pushes MTC Operator updates to the OpenShift 4 cluster automatically. On the OpenShift 3 cluster, however, the MTC Operator is installed manually and is not updated automatically.
 
-## Ensure 'OLM Managed' setting is correct for 'MigrationController' custom resource
+## Checking 'OLM Managed' setting
 
-* OCP-4 installs should leverage OLM and configure the Operator to defer to OLM for RBAC, this is set via the 'MigrationController' custom resource
-```
-olm_managed: true
-```
+In the web console, check the 'OLM Managed' setting in the 'MigrationController' manifest of each cluster:
 
-* OCP-3 installs should not use OLM and will instruct the operator to handle RBAC concerns
-```
-olm_managed: false
-```
+* OpenShift 4 uses OLM:
+  ```
+  olm_managed: true
+  ```
+* OpenShift 3 does not use OLM:
+  ```
+  olm_managed: false
+  ```
 
-## Executing migration pre-flight tests
+## Migrating a simple application
 
-When executing a migration using MTC, you are actually performing a backup automatically followed by a restore from this object storage.   All kubernetes objects, PVs and internal images associated with the namespace you are migrating will be copied to this repository.   There are many ways to copy data and your data can also be staged before performing a final migration.  Some best practices information about those options will be provided in the next section.
+Migrate a simple application without a persistent volume (PV):
 
+1. Install a simple application without a PV on the source cluster.
+2. [Migrate the application](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/migrating-applications-with-cam-3-4.html) to the target cluster. You do not need to stage the migration.
+3. Validate the application on the target cluster.
 
-Your next step should be to validate that MTC is installed correctly by migrating a simple application using the most basic method available in MTC.   First, you should install an "hello world" application of your choice on your source cluster.   To keep it very simple, we recommend using an application without any PV.   Then, following the "Migration applications from the web console" section in the official documentation, select this application and click the migrate button.   You can skip the stage phase in this first step.   Once completed, validate that your application has been migrated from your source to destination cluster.   If you get any error, we recommend following the troubleshooting section available in this guide or the official documentation.
+## Migrating an application with a persistent volume
 
-As a second validation step, you can test another application with a PV attached to it.   In this second testing phase, you could first "stage" your migration followed by a final migration.   Please note that staging can be run multiple times so that most of the data is copied to the target before the final migration.   Staging at least once will help reduce the migration time and application downtime during the migration in most cases.   Please refer to the next best practices section for more information on when to use stage.
+Migrate an application with a PV:
 
-It's also important to understand that your application should only be migrated once.    Your destination cluster should not have a namespace already created with the same name on your destination cluster before executing a migration.   When executing some tests, it's important to clean your destination cluster from that namespace before executing the same migration a second time.
+1. Install an application with an associated PV on the source cluster.
+2. Stage the migration one or more times. Staging reduces migration time and application down time during migration.
+3. Migrate the application to the target cluster.
+4. Validate the application on the target cluster.
 
+## Removing migrated namespaces
 
-Prev Section: [Cluster health checks](./cluster-health-checks.md)<br>
-Next Section: [Running the migration](./running-the-migration.md)<br>
-[Home](./README.md)
+If you are performing multiple test migrations, remove the migrated application namespace from the target cluster after each test.
+
