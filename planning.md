@@ -113,11 +113,11 @@ You can combine upstream tools and MTC for migration in a process that resembles
 The following is considered a high level set of items that you need to consider for a successful migration
 
 #### Namespaced resources
-Let's think about the applications and their connectivity.  Also consider pruning your unused/unneeded resources 
+Let's think about the applications and their connectivity such as whether the applications use the service network or the external routefor it's communication path between services or applicatons.  An additional consideration with in the namespace is to also consider pruning your unused/unneeded resources 
 
 #### Non-namespaced resources
 
-Day 2 Configuration that needs to be recreated in the new cluster
+Please consider any modification that you have made to the OpenShift 3 cluster in regards to a Day 2 Configuration that needs to be recreated in the new cluster
 
 #### External to the Cluster Configs
 
