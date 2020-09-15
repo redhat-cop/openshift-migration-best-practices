@@ -122,28 +122,32 @@ Day 2 Configuration that needs to be recreated in the new cluster
 #### External to the Cluster Configs
 
 * Certificates 
+Ensure all certificates that are currenlty in use are also added the the application that will reside in the OpenShift 4 cluster
 * Firewall Rules 
+Ensure all firewall rules that may have been added to accomodate traffic and cluster flows for the OpenShift 3 cluster are also added for the OpenShift 4 cluster
 * DNS 
+Ensure all appropriate DNS entries are entered per either the IPI installation guide or the UPI installation guide for your respective deployments if applicable
 * Load Balancing
+Ensure all appropriate Load balancing entries are entered per either the IPI installation guide or the UPI installation guide for your respective deployments if applicable
+
 
 #### Images
 
 * Migrating the internal image registry
+Ensure you migrate the existing images from the current repository if not using an external images registry
 * Prune the image registry before migration
-* TBD: unknown blob error in registry (perhaps related to NFS)
+It is imperative you prune appropriate images before you attempt a migration.
 
 #### Storage/State
 
 * MTC requires an intermediate object storage as a replication repository.
 * Source and target clusters must have full access to the replication repository.
-* TBD: Velero does not over-write objects in source environment. Link to Velero documentation.
 * What are the storage considerations for the stateful applications
 
 #### Production Downtime / Traffic Redirection
 
 * What tolerace of downtime can be allowed?
 * What type of traffic redirection can we take advantage of?
-
 
 ### OpenShift 4
 
@@ -155,10 +159,12 @@ The following considerations apply to the OpenShift 4 target environment:
 This section describes migration strategies for applications.
 
 ### MTC-based promotion workflow
+If you use the MTC based solution please reference the below image for the anticipated workflow accordingly
 
 ![MTC-based](./images/mtc-promotion-flow.png)
 
 ### CI/CD-based promotion workflow
+If you use the CI/CD based solution please reference the below image for the anticipated workflow accordingly
 
 ![CI-CD-based](./images/ci-cd-promotion-flow.png)
 
