@@ -2,7 +2,7 @@
 ---
 # Planning
 
-This section focuses on considerations to take into account when you plan your migration.
+This section focuses on considerations to review when you plan your migration.
 
 * **[Migration tools](#migration-tools)**:
   * [Migration Toolkit for Containers](#migration-toolkit-for-containers)
@@ -41,18 +41,11 @@ MTC migrates some cluster-scoped resources. If a namespaced resource references 
 
 MTC has two options for migrating persistent volume data:
 
-* **Move**: If the remote storage is accessible to the source and target clusters, you can ‘move’ the PV definition from the source cluster to target cluster. 
+* **Move**: The PV definition is moved from the source cluster to the target cluster without touching the data. This is the fastest option.
+
+* **Copy**: MTC copies either a *snapshot* or the *file system* of the PV.
   
-  This is the fastest method for migrating PV data. This method is suitable for NFS.
-
-* **Copy**: MTC has two options for copying PV data:
-  * **Snapshot**: If your storage provider supports snapshots and if you have configured a Velero VolumeSnapshotPlugin, you can create a snapshot of the volume. 
-    
-    Snapshot copying has specific requirements such as a common cloud vendor, common region, and common storage class. AWS, Google Cloud Provider, and Microsoft Azure support the snapshot copy method. 
-
-  * **Filesystem**: For all other storage use cases, the data is migrated by copying the file system.
-    
-    This method allows you to change storage classes in a migration and provides the most flexibility.
+See [PV move](./running-the-migration.md#pv-move) and [PV copy](./running-the-migration.md#pv-move) for requirements and details.
 
 **Migrating internal images**
 
