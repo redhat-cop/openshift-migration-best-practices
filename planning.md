@@ -108,32 +108,23 @@ You can combine upstream tools and MTC for migration in a process that resembles
 
 ## Migration environment considerations
 
-### OpenShift 3
+### Initial Considerations
 
-The following considerations apply to the OpenShift 3 source environment.
+The following is considered a high level set of items that you need to consider for a successful migration
 
-#### TLS
+#### Namespaced resources
+Let's think about the applications and their connectivity.  Also consider pruning your unused/unneeded resources 
 
-* Termination types
-  * Passthrough
-  * Edge
-    * Minimal amount as this is managed by the cluster by default
-  * Re-encryption
-    * Where does the certificate originate?
-    * Corporate CA
-    * Self-signed certificates
-  * Update to routes
-* CA certificates
-  * Reading PEM files
-  * Embedded certificates
+#### Non-namespaced resources
 
-#### Routing
+Day 2 Configuration that needs to be recreated in the new cluster
 
-* Traffic traversal between clusters
+#### External to the Cluster Configs
 
-#### External dependencies
-
-* Ingress/Egress
+* Certificates 
+* Firewall Rules 
+* DNS 
+* Load Balancing
 
 #### Images
 
@@ -141,11 +132,18 @@ The following considerations apply to the OpenShift 3 source environment.
 * Prune the image registry before migration
 * TBD: unknown blob error in registry (perhaps related to NFS)
 
-#### Storage
+#### Storage/State
 
 * MTC requires an intermediate object storage as a replication repository.
 * Source and target clusters must have full access to the replication repository.
 * TBD: Velero does not over-write objects in source environment. Link to Velero documentation.
+* What are the storage considerations for the stateful applications
+
+#### Production Downtime / Traffic Redirection
+
+* What tolerace of downtime can be allowed?
+* What type of traffic redirection can we take advantage of?
+
 
 ### OpenShift 4
 
@@ -154,7 +152,16 @@ The following considerations apply to the OpenShift 4 target environment:
 * Creating namespaces before migration might cause quota changes.
 
 ## Migration strategies
-This section describes migration strategies for stateless applications.
+This section describes migration strategies for applications.
+
+MTC-based promotion workflow
+
+![MTC-based](./images/mtc-promotion-flow.png)
+
+CI/CD-based promotion workflow
+
+![CI-CD-based](./images/ci-cd-promotion-flow.png)
+
 
 Each migration strategy has the following attributes:
 
