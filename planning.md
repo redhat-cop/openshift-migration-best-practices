@@ -154,11 +154,11 @@ The following considerations apply to the OpenShift 4 target environment:
 ## Migration strategies
 This section describes migration strategies for applications.
 
-MTC-based promotion workflow
+### MTC-based promotion workflow
 
 ![MTC-based](./images/mtc-promotion-flow.png)
 
-CI/CD-based promotion workflow
+### CI/CD-based promotion workflow
 
 ![CI-CD-based](./images/ci-cd-promotion-flow.png)
 
