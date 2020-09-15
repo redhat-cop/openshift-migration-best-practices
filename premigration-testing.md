@@ -55,7 +55,7 @@ Migrate a simple application without a persistent volume (PV):
 Migrate an application with a PV:
 
 1. Install an application with an associated PV on the source cluster.
-2. Stage the migration one or more times. Staging reduces migration time and application down time during migration.
+2. Stage the migration one or more times. Staging reduces migration time and application downtime during migration.
 3. Migrate the application to the target cluster.
 4. Validate the application on the target cluster.
 
