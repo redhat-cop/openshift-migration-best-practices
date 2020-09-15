@@ -110,53 +110,41 @@ You can combine upstream tools and MTC for migration in a process that resembles
 
 ### Initial Considerations
 
-The following is considered a high level set of items that you need to consider for a successful migration
+The following is considered a high level set of items that you need to consider for a successful migration.
 
 #### Namespaced resources
-Let's think about the applications and their connectivity such as whether the applications use the service network or the external routefor it's communication path between services or applicatons.  An additional consideration with in the namespace is to also consider pruning your unused/unneeded resources 
+* Within each namespace there are some considerations around the applications and their connectivity such as whether the applications use the service network or the external routefor it's communication path between services or applicatons.  An additional consideration with in the namespace is to also consider pruning your unused/unneeded resources. 
 
 #### Non-namespaced resources
 
-Please consider any modification that you have made to the OpenShift 3 cluster in regards to a Day 2 Configuration that needs to be recreated in the new cluster
+* Please consider any modification that you have made to the OpenShift 3 cluster in regards to a Day 2 Configuration that needs to be recreated in the new cluster.
 
 #### External to the Cluster Configs
 
-* Certificates 
+* Certificates - Ensure all certificates that are currenlty in use are also added the the application that will reside in the OpenShift 4 cluster.
 
-Ensure all certificates that are currenlty in use are also added the the application that will reside in the OpenShift 4 cluster
+* Firewall Rules - Ensure all firewall rules that may have been added to accomodate traffic and cluster flows for the OpenShift 3 cluster are also added for the OpenShift 4 cluster.
 
-* Firewall Rules 
+* DNS - Ensure all appropriate DNS entries are entered per either the IPI installation guide or the UPI installation guide for your respective deployments if applicable.
 
-Ensure all firewall rules that may have been added to accomodate traffic and cluster flows for the OpenShift 3 cluster are also added for the OpenShift 4 cluster
-
-* DNS 
-
-Ensure all appropriate DNS entries are entered per either the IPI installation guide or the UPI installation guide for your respective deployments if applicable
-
-* Load Balancing
-
-Ensure all appropriate Load balancing entries are entered per either the IPI installation guide or the UPI installation guide for your respective deployments if applicable
+* Load Balancing - Ensure all appropriate Load balancing entries are entered per either the IPI installation guide or the UPI installation guide for your respective deployments if applicable.
 
 
 #### Images
 
-* Migrating the internal image registry
+* Migrating the internal image registry - Ensure you migrate the existing images from the current repository if not using an external images registry.
 
-Ensure you migrate the existing images from the current repository if not using an external images registry
-
-* Prune the image registry before migration
-
-It is imperative you prune appropriate images before you attempt a migration.
+* Prune the image registry before migration - It is imperative you prune appropriate images before you attempt a migration.
 
 #### Storage/State
 
-* MTC requires an intermediate object storage as a replication repository.
-* Source and target clusters must have full access to the replication repository.
-* What are the storage considerations for the stateful applications
+* If you intend to use MTC it requires an intermediate object storage as a replication repository, so appropriate access to one is required.
+* To ensure correct MTC functionality during a migration the source and target clusters must have full access to the replication repository.
+* What are the storage considerations for the stateful applications?
 
 #### Production Downtime / Traffic Redirection
 
-* What tolerace of downtime can be allowed?
+* What tolerace of downtime can be allowed for your applications?
 * What type of traffic redirection can we take advantage of?
 
 ### OpenShift 4
@@ -169,12 +157,12 @@ The following considerations apply to the OpenShift 4 target environment:
 This section describes migration strategies for applications.
 
 ### MTC-based promotion workflow
-If you use the MTC based solution please reference the below image for the anticipated workflow accordingly
+If you use the MTC based solution please reference the below image for the anticipated workflow accordingly.
 
 ![MTC-based](./images/mtc-promotion-flow.png)
 
 ### CI/CD-based promotion workflow
-If you use the CI/CD based solution please reference the below image for the anticipated workflow accordingly
+If you use the CI/CD based solution please reference the below image for the anticipated workflow accordingly.
 
 ![CI-CD-based](./images/ci-cd-promotion-flow.png)
 
