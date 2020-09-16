@@ -113,7 +113,7 @@ You can combine upstream tools and MTC for migration in a process that resembles
 The following is considered a high level set of items that you need to consider for a successful migration.
 
 #### Namespaced resources
-* Within each namespace there are some considerations around the applications and their connectivity such as whether the applications use the service network or the external routefor it's communication path between services or applicatons.  An additional consideration with in the namespace is to also consider pruning your unused/unneeded resources. 
+* Within each namespace there are some considerations around the applications and their connectivity such as whether the applications use the service network or the external route for it's communication path between services or applicatons.  An additional consideration with in the namespace is to also consider pruning your unused/unneeded resources. 
 
 #### Non-namespaced resources
 
@@ -121,9 +121,9 @@ The following is considered a high level set of items that you need to consider 
 
 #### External to the Cluster Configs
 
-* Certificates - Ensure all certificates that are currenlty in use are also added the the application that will reside in the OpenShift 4 cluster.
+* Certificates - Ensure all certificates that are currently in use are also added to the application that will reside in the OpenShift 4 cluster.
 
-* Firewall Rules - Ensure all firewall rules that may have been added to accomodate traffic and cluster flows for the OpenShift 3 cluster are also added for the OpenShift 4 cluster.
+* Firewall Rules - Ensure all firewall rules that may have been added to accommodate traffic and cluster flows for the OpenShift 3 cluster are also added for the OpenShift 4 cluster.
 
 * DNS - Ensure all appropriate DNS entries are entered per either the IPI installation guide or the UPI installation guide for your respective deployments if applicable.
 
