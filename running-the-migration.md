@@ -28,7 +28,7 @@ This section describes considerations to review before you create a migration pl
 
 ### Migration environment
 
-Check your migration environment for the following:
+Prepare your migration environment by checking the following:
 
 * Ensure that the object storage has sufficient room for the PV data and images being migrated.
 * Increase the [CPU and memory limits of the Migration Controller](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/migrating-applications-with-cam-3-4.html#migration-changing-migration-plan-limits_migrating-3-4) for large migrations.
@@ -80,7 +80,7 @@ MTC preserves Pod UIDs during the migration process by migrating the following n
 
 These annotations preserve the UID range, ensuring that the containers retain their file system permissions on the target cluster.
 
-Migrated UIDs might duplicate UIDs in a current or future namespace on the target cluster. [(BZ#1748531 - Handling UID range namespace annotations when migrating an application from source to destination)](https://bugzilla.redhat.com/show_bug.cgi?id=1748531)
+Migrated UIDs might duplicate UIDs in a current or future namespace on the target cluster. See [BZ#1748531 - Handling UID range namespace annotations when migrating an application from source to destination](https://bugzilla.redhat.com/show_bug.cgi?id=1748531).
 
 ## Creating a migration plan
 
@@ -145,9 +145,9 @@ If you need to run different migrations, create and run the plans sequentially.
 
 Users will experience application downtime during the migration. The length of downtime depends on the size of the migration, including the number of namespaces, PVs, images, and resources in each namespace.
 
-You can reduce the downtime by performing stage migrations several days before the final migration. Stage migrations reduce the duration of the final migration because they perform incremental backup/restore operations on PV data and images.
+Stage migrations reduce the duration of the final migration because they perform incremental backup/restore operations on PV data and images.
 
-*Procedure*
+You can reduce the downtime by performing stage migrations several days before the final migration:
 
 1. Schedule downtime for the final migration.
 2. Several days before the final migration, run stage migrations so that most of the PV and image data is copied to the target cluster.
@@ -158,7 +158,7 @@ Stage migrations normally reduce the duration of the final migration. However, i
 
 **Comparison of stage migration and final migration**
 
-The following table compares stage migration and final migration.
+The following table compares stage migration and final migration:
 
 | | Stage migration  | Final migration |
 | ------------- | ------------- | ------------- |
@@ -175,7 +175,7 @@ The following table compares stage migration and final migration.
 
 Quiescing brings an application to a consistent state so that its file system can be copied without causing data corruption.
 
-MTC quiesces applications by scaling them to `0`. In other words, deployments, deployment configuration, jobs, stateful sets, and other resources are scaled to `0` if you select `Quiesce` when running a migration plan.
+Deployments, deployment configuration, jobs, stateful sets, and other resources are scaled to `0` if you select the `Quiesce` option before running a migration plan.
 
 In the future, MTC might support quiescence options such as putting an application into `read-only` mode.
 
