@@ -4,17 +4,17 @@
 
 This section focuses on considerations to review when you plan your migration.
 
-* **[Migration tools](#migration-tools)**:
+* **[Migration tools](#migration-tools)**
   * [Migration Toolkit for Containers](#migration-toolkit-for-containers)
     - [When to use MTC](#when-to-use-mtc)
     - [MTC documentation](#mtc-documentation)
   * [Upstream migration tools](#upstream-migration-tools)
     - [Comparison of MTC and upstream tools](#comparison-of-mtc-and-upstream-tools)
     - [Combining MTC and upstream tools](#combining-mtc-and-upstream-tools)
-* **[Migration environment considerations](#migration-environment-considerations)**:
-  * [OpenShift 3](#openshift-3): Aspects of the OpenShift 3 source environment that might affect migration
-  * [OpenShift 4](#openshift-4): Aspects of the OpenShift 4 target environment that might affect migration
-* **[Migration strategies](#migration-strategies)**: Strategies for migrating stateless applications
+* **[Migration environment considerations](#migration-environment-considerations)**
+  * [OpenShift 3](#openshift-3). Aspects of the OpenShift 3 source environment that might affect migration
+  * [OpenShift 4](#openshift-4). Aspects of the OpenShift 4 target environment that might affect migration
+* **[Migration strategies](#migration-strategies)**. Strategies for migrating stateless applications
   - ["Big Bang" migration](#big-bang-migration)
   - [Individual migration](#individual-migration)
   - [Individual, canary-style migration](#individual-canary-style-migration)
