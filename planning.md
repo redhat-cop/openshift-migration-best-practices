@@ -108,44 +108,44 @@ You can combine upstream tools and MTC for migration in a process that resembles
 
 ## Migration environment considerations
 
-### OpenShift 3
+### Initial Considerations
 
-The following considerations apply to the OpenShift 3 source environment.
+The following is considered a high level set of items that you need to consider for a successful migration.
 
-#### TLS
+#### Namespaced resources
+* Within each namespace there are some considerations around the applications and their connectivity such as whether the applications use the service network or the external route for it's communication path between services or applicatons.  An additional consideration with in the namespace is to also consider pruning your unused/unneeded resources. 
 
-* Termination types
-  * Passthrough
-  * Edge
-    * Minimal amount as this is managed by the cluster by default
-  * Re-encryption
-    * Where does the certificate originate?
-    * Corporate CA
-    * Self-signed certificates
-  * Update to routes
-* CA certificates
-  * Reading PEM files
-  * Embedded certificates
+#### Non-namespaced resources
 
-#### Routing
+* Please consider any modification that you have made to the OpenShift 3 cluster in regards to a Day 2 Configuration that needs to be recreated in the new cluster.
 
-* Traffic traversal between clusters
+#### External to the Cluster Configs
 
-#### External dependencies
+* Certificates - Ensure all certificates that are currently in use are also added to the application that will reside in the OpenShift 4 cluster.
 
-* Ingress/Egress
+* Firewall Rules - Ensure all firewall rules that may have been added to accommodate traffic and cluster flows for the OpenShift 3 cluster are also added for the OpenShift 4 cluster.
+
+* DNS - Ensure all appropriate DNS entries are entered per either the IPI installation guide or the UPI installation guide for your respective deployments if applicable.
+
+* Load Balancing - Ensure all appropriate Load balancing entries are entered per either the IPI installation guide or the UPI installation guide for your respective deployments if applicable.
+
 
 #### Images
 
-* Migrating the internal image registry
-* Prune the image registry before migration
-* TBD: unknown blob error in registry (perhaps related to NFS)
+* Migrating the internal image registry - Ensure you migrate the existing images from the current repository if not using an external images registry.
 
-#### Storage
+* Prune the image registry before migration - It is imperative you prune appropriate images before you attempt a migration.
 
-* MTC requires an intermediate object storage as a replication repository.
-* Source and target clusters must have full access to the replication repository.
-* TBD: Velero does not over-write objects in source environment. Link to Velero documentation.
+#### Storage/State
+
+* If you intend to use MTC it requires an intermediate object storage as a replication repository, so appropriate access to one is required.
+* To ensure correct MTC functionality during a migration the source and target clusters must have full access to the replication repository.
+* What are the storage considerations for the stateful applications?
+
+#### Production Downtime / Traffic Redirection
+
+* What tolerace of downtime can be allowed for your applications?
+* What type of traffic redirection can we take advantage of?
 
 ### OpenShift 4
 
@@ -154,7 +154,18 @@ The following considerations apply to the OpenShift 4 target environment:
 * Creating namespaces before migration might cause quota changes.
 
 ## Migration strategies
-This section describes migration strategies for stateless applications.
+This section describes migration strategies for applications.
+
+### MTC-based promotion workflow
+If you use the MTC based solution please reference the below image for the anticipated workflow accordingly.
+
+![MTC-based](./images/mtc-promotion-flow.png)
+
+### CI/CD-based promotion workflow
+If you use the CI/CD based solution please reference the below image for the anticipated workflow accordingly.
+
+![CI-CD-based](./images/ci-cd-promotion-flow.png)
+
 
 Each migration strategy has the following attributes:
 
