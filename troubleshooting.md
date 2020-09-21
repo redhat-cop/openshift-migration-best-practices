@@ -2,6 +2,13 @@
 ---
 # Troubleshooting
 
+
+This section describes common troubleshooting procedures.
+
+* **[Using `must-gather`](#using-must-gather)**
+* **[How to retry a migration](#how-to-retry-a-migration)**
+* **[Removing the MTC Operator and resources](#removing-the-mtc-operator-and-resources)**
+
 Upstream doc for improving debug experience
 * https://github.com/konveyor/enhancements/tree/master/enhancements/debug
 
@@ -19,7 +26,7 @@ Run the `must-gather` command on your cluster:
 $ oc adm must-gather --image=registry.redhat.io/rhcam-1-2/openshift-migration-must-gather-rhel8
 ````
 
-# How to Clean Up/Reset a migration
+# How to retry a migration
 
 ## Failed migration, how to clean up and retry
 * Ensure stage pods have been cleaned up.  If a migration fails during stage or copy, the 'stage' pods will be retained to allow debugging.  Before proceeding with a reattempt of the migration the stage pods need to be manually removed.
@@ -32,15 +39,26 @@ TBD
 
 TBD
 
-# Removing the MTC Operator and cluster-scoped resources
+# Removing the MTC Operator and resources
 
 The following procedure removes the MTC Operator and cluster-scoped resources:
 
 1. Delete the Migration Controller and its resources:
-```` 
-$ oc delete migrationcontroller <resource_name>
-````
-2. Wait for the MTC Operator to finish deleting the resources.
+  ```` 
+  $ oc delete migrationcontroller <resource_name>
+  ````
+  Wait for the MTC Operator to finish deleting the resources.
+
+2. Uninstall the MTC Operator:
+  * OpenShift 4: Uninstall the Operator in the [web console](https://docs.openshift.com/container-platform/4.5/operators/olm-deleting-operators-from-cluster.html) or by running the following command: 
+  ````
+  $ oc delete ns openshift-migration
+  ````
+  * Openshift 3: Uninstall the operator by deleting it:
+  ````
+  $ oc delete -f operator.yml
+  ````
+
 3. Uninstall the MTC Operator:
   * On the OpenShift 4 cluster, you can uninstall the Operator by using the [web console](https://docs.openshift.com/container-platform/4.5/operators/olm-deleting-operators-from-cluster.html) or by running the following command: 
   ````
@@ -50,8 +68,8 @@ $ oc delete migrationcontroller <resource_name>
   ````
   $ oc delete -f operator.yml
   ````
-4. Delete the cluster-scoped resources:
 
+4. Delete the cluster-scoped resources:
   * Migration Custom Resource Definition (CRD):
   ````
   $ oc get crds | grep 'migration.openshift.io' | awk '{print $1}' | xargs -I{} oc delete crd {}
