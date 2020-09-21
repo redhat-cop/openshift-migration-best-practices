@@ -30,24 +30,37 @@ This section describes considerations to review before you create a migration pl
 
 Prepare your migration environment by checking the following:
 
-* Ensure that the object storage has sufficient room for the PV data and images being migrated.
-* Increase the [CPU and memory limits of the Migration Controller](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/migrating-applications-with-cam-3-4.html#migration-changing-migration-plan-limits_migrating-3-4) for large migrations.
-* Ensure that your cluster has adequate network bandwidth, especially if you are migrating PVs. If PV migrations are slow, check your storage nodes to ensure that they have adequate input/output, CPUs, and memory.
-* Use the [`prune` command](https://docs.openshift.com/container-platform/4.5/applications/pruning-objects.html) to remove old builds, deployments, and images from each namespace being migrated.
-* [Exclude PVs, imagestreams, and other resources](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/migrating-applications-with-cam-3-4.html#migration-excluding-resources_migrating-3-4) if you do not want to migrate them with MTC.
-* Check the namespaces on the target cluster to ensure that they do not duplicate namespaces being migrated.
-* Back up PV data in case an application displays unexpected behavior after migration and corrupts the data.
+* Network:
+  * Ensure that your clusters have adequate network bandwidth, especially if you are copying PVs. 
+  * Ensure that [DNS records](https://docs.openshift.com/container-platform/4.5/installing/installing_bare_metal/installing-bare-metal.html#installation-infrastructure-user-infra_installing-bare-metal) for your application exist on the target cluster.
+  * Certificates: Ensure that certificates used by your application exist on the target cluster.
+  * Ensure that the appropriate [firewall rules](https://docs.openshift.com/container-platform/4.5/installing/install_config/configuring-firewall.html) are configured on the target cluster.
+  * Ensure that load balancing is correctly configured on the target cluster.
+* Resources:
+  * Check whether your application uses a service network or an external route to communicate with services.
+  * If your application uses non-namespaced resources, you must re-create them on the target cluster.
+  * You must migrate images from the internal image registry if you are not using an external image registry. If they cannot be migrated, you must re-create them manually on the target cluster.
+  * Increase the [CPU and memory limits of the Migration Controller](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/migrating-applications-with-cam-3-4.html#migration-changing-migration-plan-limits_migrating-3-4) for large migrations.
+  * Use the [`prune` command](https://docs.openshift.com/container-platform/4.5/applications/pruning-objects.html) to remove old builds, deployments, and images from each namespace being migrated.
+  * [Exclude PVs, imagestreams, and other resources](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/migrating-applications-with-cam-3-4.html#migration-excluding-resources_migrating-3-4) if you do not want to migrate them with MTC.
+* Namespaces:
+  * Check the namespaces on the target cluster to ensure that they do not duplicate namespaces being migrated.
+  * Do not create namespaces for your application on the target cluster before migration because this can cause quotas to change.
+* Storage:
+  * Ensure that the object storage (replication repository) has sufficient room for the PV data and images being migrated.
+  * If PV migrations are slow, check that your storage nodes have adequate input/output, CPUs, and memory.
+  * Back up PV data in case an application displays unexpected behavior after migration and corrupts the data.
 
 ### Increasing migration plan limits
 
-You can [increase the limits](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/migrating-applications-with-cam-3-4.html#migration-changing-migration-plan-limits_migrating-3-4) for a single migration plan, but such changes must be approached with caution and thoroughly tested.
+You can [increase the limits](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/migrating-applications-with-cam-3-4.html#migration-changing-migration-plan-limits_migrating-3-4) for a single migration plan, but such changes must be *approached with caution and thoroughly tested*.
 
 MTC has the following migration plan defaults to encourage smaller migrations:
 * 100 PVs
 * 100 Pods
 * 10 namespaces
 
-These limits should only be increased if a large plan is required for a specific scenario, for example, migrating a large namespace that contains many resources or migrating several namespaces together because of dependency issues.
+These limits should only be increased if a large plan is required for migrating a namespace that contains many resources or migrating several namespaces together because of dependency issues.
 
 ### Resource quotas
 

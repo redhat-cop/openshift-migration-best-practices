@@ -12,13 +12,14 @@ This section focuses on considerations to review when you plan your migration.
     - [Comparison of MTC and upstream tools](#comparison-of-mtc-and-upstream-tools)
     - [Combining MTC and upstream tools](#combining-mtc-and-upstream-tools)
 * **[Migration environment considerations](#migration-environment-considerations)**
-  * [OpenShift 3](#openshift-3). Aspects of the OpenShift 3 source environment that might affect migration
-  * [OpenShift 4](#openshift-4). Aspects of the OpenShift 4 target environment that might affect migration
-* **[Migration strategies](#migration-strategies)**. Strategies for migrating stateless applications
+* **[Migration workflows](#migration-workflows)**
+  - [MTC workflow](#mtc-workflow)
+  - [CI/CD workflow](#cicd-workflow)
+* **[Network traffic migration strategies](#network-traffic-migration-strategies)**
   - ["Big Bang" migration](#big-bang-migration)
-  - [Individual migration](#individual-migration)
-  - [Individual, canary-style migration](#individual-canary-style-migration)
-  - [Individual, audience-based migration](#individual-audience-based-migration)
+  - [Individual applications](#individual-applications)
+  - [Canary-style migration of individual applications](#canary-style-migration-of-individual-applications)
+  - [Audience-based migration of individual applications](#audience-based-migration-of-individual-applications)
 
 ## Migration tools
 
@@ -87,15 +88,15 @@ The tools are smaller and more focused. They are based on Ansible playbooks, Pyt
 
 #### Combining MTC and upstream tools
 
-You can combine upstream tools and MTC for migration in a process that resembles the following procedure.
+You can use a combination of upstream tools and MTC for migration.
 
-*Prerequisites*
+Before migration, check your environment for the following requirements:
 
-* Direct network connection between the source and target clusters. A process running on each node of the source cluster must be able to connect to an exposed route on the target cluster.
-* The host running `pvc-migrate` has root access to each node of the source cluster.
-* PVs are being migrated from OpenShift Container Storage 3 to 4. `pvc-migrate` does not support other storage providers.
+* There must be a direct network connection between the source and target clusters. A process running on each node of the source cluster must be able to connect to an exposed route on the target cluster.
+* The host running `pvc-migrate` requires root access to each node of the source cluster.
+* PVs must be OpenShift Container Storage. `pvc-migrate` does not support other storage providers.
 
-*Procedure*
+The migration workflow is similar to the following procedure:
 
 1. Configure MTC to omit PVs and/or images from the migration plan by setting the following parameters in the Migration Controller manifest:
   ```
@@ -108,70 +109,38 @@ You can combine upstream tools and MTC for migration in a process that resembles
 
 ## Migration environment considerations
 
-### Initial Considerations
+This section describes migration environment considerations to consider when you are planning your migration:
 
-The following is considered a high level set of items that you need to consider for a successful migration.
+* Consider how stored data will be migrated if you are migrating stateful applications.
+* Consider how much downtime your application can tolerate during migration.
+* Plan for traffic redirection during migration.
 
-#### Namespaced resources
-* Within each namespace there are some considerations around the applications and their connectivity such as whether the applications use the service network or the external route for it's communication path between services or applicatons.  An additional consideration with in the namespace is to also consider pruning your unused/unneeded resources. 
+## Migration workflows
 
-#### Non-namespaced resources
+### MTC workflow
 
-* Please consider any modification that you have made to the OpenShift 3 cluster in regards to a Day 2 Configuration that needs to be recreated in the new cluster.
+MTC migrates applications from OCP 3 to OCP 4 in production and non-production environments.
 
-#### External to the Cluster Configs
-
-* Certificates - Ensure all certificates that are currently in use are also added to the application that will reside in the OpenShift 4 cluster.
-
-* Firewall Rules - Ensure all firewall rules that may have been added to accommodate traffic and cluster flows for the OpenShift 3 cluster are also added for the OpenShift 4 cluster.
-
-* DNS - Ensure all appropriate DNS entries are entered per either the IPI installation guide or the UPI installation guide for your respective deployments if applicable.
-
-* Load Balancing - Ensure all appropriate Load balancing entries are entered per either the IPI installation guide or the UPI installation guide for your respective deployments if applicable.
-
-
-#### Images
-
-* Migrating the internal image registry - Ensure you migrate the existing images from the current repository if not using an external images registry.
-
-* Prune the image registry before migration - It is imperative you prune appropriate images before you attempt a migration.
-
-#### Storage/State
-
-* If you intend to use MTC it requires an intermediate object storage as a replication repository, so appropriate access to one is required.
-* To ensure correct MTC functionality during a migration the source and target clusters must have full access to the replication repository.
-* What are the storage considerations for the stateful applications?
-
-#### Production Downtime / Traffic Redirection
-
-* What tolerace of downtime can be allowed for your applications?
-* What type of traffic redirection can we take advantage of?
-
-### OpenShift 4
-
-The following considerations apply to the OpenShift 4 target environment:
-
-* Creating namespaces before migration might cause quota changes.
-
-## Migration strategies
-This section describes migration strategies for applications.
-
-### MTC-based promotion workflow
-If you use the MTC based solution please reference the below image for the anticipated workflow accordingly.
+The following diagram describes the MTC workflow:
 
 ![MTC-based](./images/mtc-promotion-flow.png)
 
-### CI/CD-based promotion workflow
-If you use the CI/CD based solution please reference the below image for the anticipated workflow accordingly.
+### CI/CD workflow
+
+A CI/CD pipeline deploys applications on OCP 4 production and non-production environments.
+
+The following diagram describes a CI/CD workflow:
 
 ![CI-CD-based](./images/ci-cd-promotion-flow.png)
 
+## Network traffic migration strategies
 
-Each migration strategy has the following attributes:
+This section describes strategies for migrating network traffic for stateless aplications.
 
 * Applications are deployed on the 4.x cluster.
 * If necessary, the 4.x router default certificate includes the 3.x wildcard SAN.
 * Each application adds an additional route with the 3.x host name.
+* Optional: The route with the 3.x host name contains an appropriate certificate.
 
 ### "Big Bang" migration
 
@@ -179,17 +148,13 @@ At migration, the 3.x wildcard DNS record is changed to point to the 4.x router 
 
 ![BigBang](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/migration-strategy-bigbang.png)
 
-### Individual migration
-
-* Optional: The route with the 3.x host name contains an appropriate certificate.
+### Individual applications
 
 At migration, a new record is created for each application with the 3.x FQDN/host name pointing to the 4.x router VIP. This record takes precedence over the 3.x wildcard DNS record.
 
 ![Individual](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/migration-strategy-individual.png)
 
-### Individual, canary-style migration
-
-* Optional: The route with the 3.x host name contains an appropriate certificate.
+### Canary-style migration of individual applications
 
 A VIP/proxy with two backends, the 3.x router VIP and the 4.x router VIP, is created for each application.
 
@@ -201,9 +166,7 @@ The proxy entry for the application is configured to route `X`% of the traffic t
 
 ![Canary](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/migration-strategy-canary.png)
 
-### Individual, audience-based migration
-
-* Optional: The route with the 3.x host name contains an appropriate certificate.
+### Audience-based migration of individual applications
 
 A VIP/proxy with two backends, the 3.x router VIP and the 4.x router VIP, is created for each application.
 
