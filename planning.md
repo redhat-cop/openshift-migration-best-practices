@@ -137,8 +137,6 @@ The following diagram describes a CI/CD workflow:
 
 This section describes strategies for migrating network traffic for stateless aplications.
 
-Each strategy has the following characteristics:
-
 * Applications are deployed on the 4.x cluster.
 * If necessary, the 4.x router default certificate includes the 3.x wildcard SAN.
 * Each application adds an additional route with the 3.x host name.
