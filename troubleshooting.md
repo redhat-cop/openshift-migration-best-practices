@@ -2,6 +2,7 @@
 ---
 # Troubleshooting
 
+
 This section describes common troubleshooting procedures.
 
 * **[Using `must-gather`](#using-must-gather)**
@@ -48,7 +49,7 @@ The following procedure removes the MTC Operator and cluster-scoped resources:
   ````
   Wait for the MTC Operator to finish deleting the resources.
 
-3. Uninstall the MTC Operator:
+2. Uninstall the MTC Operator:
   * OpenShift 4: Uninstall the Operator in the [web console](https://docs.openshift.com/container-platform/4.5/operators/olm-deleting-operators-from-cluster.html) or by running the following command: 
   ````
   $ oc delete ns openshift-migration
@@ -58,8 +59,17 @@ The following procedure removes the MTC Operator and cluster-scoped resources:
   $ oc delete -f operator.yml
   ````
 
-4. Delete the cluster-scoped resources:
+3. Uninstall the MTC Operator:
+  * On the OpenShift 4 cluster, you can uninstall the Operator by using the [web console](https://docs.openshift.com/container-platform/4.5/operators/olm-deleting-operators-from-cluster.html) or by running the following command: 
+  ````
+  $ oc delete ns openshift-migration
+  ````
+  * On the Openshift 3 cluster, you can uninstall the operator by deleting it:
+  ````
+  $ oc delete -f operator.yml
+  ````
 
+4. Delete the cluster-scoped resources:
   * Migration Custom Resource Definition (CRD):
   ````
   $ oc get crds | grep 'migration.openshift.io' | awk '{print $1}' | xargs -I{} oc delete crd {}
