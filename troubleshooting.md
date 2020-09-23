@@ -49,6 +49,22 @@ about what objects are relevant depending on this failure stage.
 > on the target side, followed by a final restore to restore from the original
 > application's source of truth.
 
+## Querying the cli
+
+The migration debug tree can be viewed and traced via label selectors. For example,
+to retrieve all migmigrations that are associated with a particular plan:
+
+```
+# oc get migmigration -l 'migration.openshift.io/migplan-name=test'
+NAME                                   READY   PLAN   STAGE   ITINERARY   PHASE
+09a8bf20-fdc5-11ea-a447-cb5249018d21           test   false   Final       Completed
+```
+
+Notice the columns show select useful information about the migration, such as
+the associated plan name, itinerary step, and phase.
+
+TODO: Need to update with Backup/Restore queries
+
 # Cleaning up a failed migration
 
 ## Failed migration, how to clean up and retry
