@@ -30,11 +30,28 @@ $ oc adm must-gather --image=registry.redhat.io/rhcam-1-2/openshift-migration-mu
 
 ## Scale a quiesced application back
 
-TBD
+If the migrated source application was quiesced during your migration,
+you will also need to scale it back to its initial replica count. This can be
+done manually by editing the deployment primitive (Deployment, DeploymentConfig, etc.)
+and setting the `spec.replicas` field back to the original, non-zero value:
+
+```
+$ oc edit deployment <deployment-name>
+```
 
 ## Note on labels applied to help track what was migrated
 
-TBD
+When quiescing a source application, MTC will annotate the original replica
+count on the deployment object for reference:
+
+```
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    migration.openshift.io/preQuiesceReplicas: "1"
+```
 
 # Deleting the MTC Operator and resources
 
