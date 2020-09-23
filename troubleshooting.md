@@ -4,6 +4,8 @@
 
 This section describes common troubleshooting procedures.
 
+* **[MTC Data Model](#mtc-data-model)**
+* **[Debugging Tips](#debugging-tips)**
 * **[Using `must-gather`](#using-must-gather)**
 * **[Cleaning up a failed migration](#cleaning-up-a-failed-migration)**
 * **[Deleting the MTC Operator and resources](#deleting-the-mtc-operator-and-resources)**
@@ -14,14 +16,16 @@ Upstream doc for improving debug experience
 Debug flowchart (in progress)
 * [MTC Debug flowchart](https://app.lucidchart.com/documents/view/d0907ce1-ccf1-4226-86eb-e5332f9d42a4/0_0)
 
-# Using `must-gather`
+# MTC Data Model
 
-You can use the `must-gather` tool to collect information for troubleshooting or for opening a customer support case on the [Red Hat Customer Portal](https://access.redhat.com/). The `openshift-migration-must-gather-rhel8` image collects migration-specific logs and Custom Resource data that are not collected by the default `must-gather` image.
+The following is a diagram of the CRDs that make up the MTC data model for context.
+Each of these objects are standard k8s CRDs, and the user can therefore use the
+normal REST CRUD operations for acting on then via the kubectl and oc clients,
+or even the HTTP interface directly:
 
-Run the `must-gather` command on your cluster:
-````
-$ oc adm must-gather --image=registry.redhat.io/rhcam-1-2/openshift-migration-must-gather-rhel8
-````
+TODO: Need to update diagram with MigAnalytic and MigHook
+
+![CRD Architecture](./images/CRDArch.png)
 
 # Debugging Tips
 
@@ -49,17 +53,6 @@ about what objects are relevant depending on this failure stage.
 > on the target side, followed by a final restore to restore from the original
 > application's source of truth.
 
-## MTC Data Model
-
-The following is a diagram of the CRDs that make up the MTC data model for context.
-Each of these objects are standard k8s CRDs, and the user can therefore use the
-normal REST CRUD operations for acting on then via the kubectl and oc clients,
-or even the HTTP interface directly:
-
-TODO: Need to update diagram with MigAnalytic and MigHook
-
-![CRD Architecture](./images/CRDArch.png)
-
 ## Querying the cli
 
 The migration debug tree can be viewed and traced via label selectors. For example,
@@ -76,6 +69,15 @@ the associated plan name, itinerary step, and phase.
 
 TODO: Need to update with Backup/Restore queries
 
+# Using `must-gather`
+
+You can use the `must-gather` tool to collect information for troubleshooting or for opening a customer support case on the [Red Hat Customer Portal](https://access.redhat.com/). The `openshift-migration-must-gather-rhel8` image collects migration-specific logs and Custom Resource data that are not collected by the default `must-gather` image.
+
+Run the `must-gather` command on your cluster:
+````
+$ oc adm must-gather --image=registry.redhat.io/rhcam-1-2/openshift-migration-must-gather-rhel8
+````
+
 ## Previewing metrics on local Prometheus server
 
 must-gather can be used to produce a dump of the last day of metrics data,
@@ -91,7 +93,9 @@ including a [set of useful queries](https://github.com/konveyor/mig-operator/blo
 # Cleaning up a failed migration
 
 ## Failed migration, how to clean up and retry
-* Ensure stage pods have been cleaned up.  If a migration fails during stage or copy, the 'stage' pods will be retained to allow debugging.  Before proceeding with a reattempt of the migration the stage pods need to be manually removed.
+Ensure stage pods have been cleaned up.  If a migration fails during stage or copy,
+the 'stage' pods will be retained to allow debugging.  Before proceeding with a
+reattempt of the migration the stage pods need to be manually removed.
 
 ## Scale a quiesced application back
 
