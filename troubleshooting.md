@@ -23,6 +23,32 @@ Run the `must-gather` command on your cluster:
 $ oc adm must-gather --image=registry.redhat.io/rhcam-1-2/openshift-migration-must-gather-rhel8
 ````
 
+# Debugging Tips
+
+The MTC UI includes a "View migration plan resources" menu item for visualizing
+a migration plan and its associated resources as a migration is running. This is
+a good place to start when investigating failures, and provides both the cli
+`oc get` command, as well as a raw object viewer the user can use to inspect
+the resource.
+
+![Resource Debug Kebab Option](./images/ResourceDebugKebabOption.png)
+
+![Debug Tree UI](./images/DebugTree.png)
+
+Typically the objects that you are interested in depends on the stage that the
+migration failed during. The flow chart linked above provides more information
+about what objects are relevant depending on this failure stage.
+
+> NOTE: Stage migrations will only have a single pair of Backup and Restore objects,
+> while a Final migration will have *two* pairs of Backup and Restore objects.
+> This can be considered a low level implementation detail, but the initial
+> backup is performed to capture the original, unaltered state of the application
+> and its k8s objects and remains the source of truth. The application is then
+> quiesced, and a stage backup is performed to back up the application storage
+> related resources (PV, PVC, the data itself). These storage objects are restored
+> on the target side, followed by a final restore to restore from the original
+> application's source of truth.
+
 # Cleaning up a failed migration
 
 ## Failed migration, how to clean up and retry
@@ -36,7 +62,13 @@ done manually by editing the deployment primitive (Deployment, DeploymentConfig,
 and setting the `spec.replicas` field back to the original, non-zero value:
 
 ```
-$ oc edit deployment <deployment-name>
+$ oc edit deployment <deployment_name>
+```
+
+Alternatively, you can scale your deployment with the oc scale cmd:
+
+```
+$ oc scale deployment <deployment_name> --replicas=<desired_replicas>
 ```
 
 ## Note on labels applied to help track what was migrated
