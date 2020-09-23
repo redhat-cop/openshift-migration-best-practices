@@ -49,6 +49,17 @@ about what objects are relevant depending on this failure stage.
 > on the target side, followed by a final restore to restore from the original
 > application's source of truth.
 
+## MTC Data Model
+
+The following is a diagram of the CRDs that make up the MTC data model for context.
+Each of these objects are standard k8s CRDs, and the user can therefore use the
+normal REST CRUD operations for acting on then via the kubectl and oc clients,
+or even the HTTP interface directly:
+
+TODO: Need to update diagram with MigAnalytic and MigHook
+
+![CRD Architecture](./images/CRDArch.png)
+
 ## Querying the cli
 
 The migration debug tree can be viewed and traced via label selectors. For example,
