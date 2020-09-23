@@ -7,6 +7,7 @@ This section describes common troubleshooting procedures.
 * **[MTC Data Model](#mtc-data-model)**
 * **[Debugging Tips](#debugging-tips)**
 * **[Using `must-gather`](#using-must-gather)**
+* **[Performance metrics](#performance-metrics)**
 * **[Cleaning up a failed migration](#cleaning-up-a-failed-migration)**
 * **[Deleting the MTC Operator and resources](#deleting-the-mtc-operator-and-resources)**
 
@@ -84,7 +85,7 @@ must-gather can be used to produce a dump of the last day of metrics data,
 which can then be viewed with a local Prometheus instance following the
 instructions in the [konveyor must-gather repo](https://github.com/konveyor/must-gather#preview-metrics-on-local-prometheus-server).
 
-## Performance metrics
+# Performance metrics
 
 Details about the metrics that are recorded by the MTC controller can be found
 in the [mig-operator documentation](https://github.com/konveyor/mig-operator/blob/master/docs/usage/Metrics.md#accessing-mig-controller-prometheus-metrics),
