@@ -65,6 +65,16 @@ the associated plan name, itinerary step, and phase.
 
 TODO: Need to update with Backup/Restore queries
 
+## Previewing metrics on local Prometheus server
+
+must-gather can be used to produce a dump of the last day of metrics data,
+which can then be viewed with a local Prometheus instance following the
+instructions in the [konveyor must-gather repo](https://github.com/konveyor/must-gather#preview-metrics-on-local-prometheus-server).
+
+Details about the metrics that are recorded by the MTC controller can be found
+in the [mig-operator documentation](https://github.com/konveyor/mig-operator/blob/master/docs/usage/Metrics.md#accessing-mig-controller-prometheus-metrics),
+including a [set of useful queries](https://github.com/konveyor/mig-operator/blob/master/docs/usage/Metrics.md#useful-queries) that are available for performance monitoring.
+
 # Cleaning up a failed migration
 
 ## Failed migration, how to clean up and retry
