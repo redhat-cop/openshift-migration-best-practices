@@ -1,18 +1,55 @@
 [![Home](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/home.png)](./README.md) | [Planning <](./planning.md) Cluster health checks  [> Premigration testing](./premigration-testing.md)
 ---
 # Cluster health checks
+This section presents a list of recommended checks to run on your source 3.9+ and target 4.x OpenShift clusters before running the actual migration process.  The goal of these checks is to detect potential issues that may impact the migration process. 
 
 ## General health
 
-* Install and configure the [Prometheus Cluster Monitoring stack](https://docs.openshift.com/container-platform/4.5/monitoring/cluster_monitoring/configuring-the-monitoring-stack.html).
-* Check the cluster nodes: ` $ oc get nodes`
+### Checks on source 3.9+ cluster:
+
+* Install and configure the [Prometheus Cluster Monitoring stack](https://docs.openshift.com/container-platform/3.11/install_config/prometheus_cluster_monitoring.html).  Prometheus provides a detailed view of the health of the cluster componentes, and will help in detecting problems in the cluster.
+
+* Check the cluster nodes, verify they are all in **Ready** state: ` $ oc get nodes`
+
 * Check the persistent volumes (PVs) on the source cluster: `$ oc get pv`
   * Mounted PVs
   * Unmounted PVs
   * Abnormal configurations
   * PVs stuck in terminating state
 
-## Capacity
+* Check pods with status different from Running or Completed.  However not all of them will signal an error:
+```
+$ oc get pods --all-namespaces|egrep -v 'Running | Completed'
+```
+
+* Check for pods with a high restart count.  Even if they are in a status of Running, these may point to underlying problems.
+
+* Check that the **etcd** cluster is [healthy](https://access.redhat.com/articles/3093761).
+
+* Check [network connectivity](https://docs.openshift.com/container-platform/3.11/day_two_guide/environment_health_checks.html#connectivity-on-master-hosts) between master hosts.
+
+* Check the [API service status](https://docs.openshift.com/container-platform/3.11/day_two_guide/environment_health_checks.html#day-two-guide-api-service-status).
+
+* Certificate expiration.  Check that the cluster certificates are not close to expiration and will be valid for the duration of the migration process. The [easy-mode ansible playbook](https://docs.openshift.com/container-platform/3.11/install_config/redeploying_certificates.html#install-config-cert-expiry) is a useful tool to perform this check.
+
+### Checks on target 4.x cluster:
+
+* Check that the cluster has access to any external services required by the applications, verify network connectivity and proper permissions.  Common examples of external services are: Databases; source code repositories, container image registries, CI/CD tools, etc.  
+
+* Check that applications, services, appliances, etc. external to the cluster that use services provided by the Openshift cluster have access and proper permissions in the target cluster.
+
+* Verify that all internal container images dependencies are met.
+If an application depends on an image that must be present on the cluster's internal registry, and that image is not built in the application's own project, check that the image exists.  For example an application using the php:7.1 base image from the php image stream in an OCP 3.11 cluster will not work on an OCP 4.x cluster, because that particular version is not included in the php image stream.
+
+## Resource capacity
+
+### Source 3.9+ cluster. 
+
+* Check that the nodes in the cluster meet the [minimum hardware requirements](https://docs.openshift.com/container-platform/3.11/install/prerequisites.html#hardware) for an OpenShift installation.  The cluster requires spare resources in terms of memory, CPU and storage to be able to run its usual workloads plus the Cluster Application Migration (CAM) tool.  The amount of spare resources required depends on the number of kubernetes resources being migrated on a single run of the CAM tool.
+
+### Target 4.x cluster.
+
+* Check that the cluster meets the minimum hardware requirements for the specific platform and method of installation used.  For example [this are the minimum resource requirements](https://docs.openshift.com/container-platform/4.5/installing/installing_bare_metal/installing-bare-metal.html#minimum-resource-requirements_installing-bare-metal) for a baremetal installation. The cluster requires spare resources in terms of memory, CPU and storage to be able to run its usual workloads plus the Cluster Application Migration (CAM) tool.  The amount of spare resources required depends on the number of kubernetes resources being migrated on a single run of the CAM tool.
 
 * Available bandwidth between the source and target clusters:
   * Less than 10Gbps
@@ -31,7 +68,10 @@
 
 ## Additional checks
 
-Do instance types selected for the infrastructure on the target cluster meet the performance recommendations? 
+* Review [migration considerations](https://access.redhat.com/documentation/en-us/openshift_container_platform/4.5/html-single/migration/index#migration-considerations)
+
+* Check that the Identity provider is working on both source and destinations clusters
+
 
 
 
