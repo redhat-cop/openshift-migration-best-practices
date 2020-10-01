@@ -63,11 +63,11 @@ You can perform the following health checks on an OpenShift 3.9+ source cluster:
 
 * Check that the internal container image registry is healthy, images can be read from and written to it.
 
-* Check that the internal container image registry uses a [supported storage type.](https://docs.openshift.com/container-platform/3.11/scaling_performance/optimizing_storage.html#registry)
+* Check that the internal container image registry uses a [supported storage type](https://docs.openshift.com/container-platform/3.11/scaling_performance/optimizing_storage.html#registry).
 
-* Check that applications are not using [eprecated Kubernetes API references](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/troubleshooting-3-4.html#migration-gvk-incompatibility_migrating-3-4).  The migration tool will warn you about any resources using deprecated Kubernetes API references. 
+* Check that applications are not using [deprecated Kubernetes API references](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/troubleshooting-3-4.html#migration-gvk-incompatibility_migrating-3-4). MTC will warn you about any resources using deprecated Kubernetes API references. 
 
-* Check that all nodes in the cluster have high [entropy value](https://docs.openshift.com/container-platform/3.11/day_two_guide/run_once_tasks.html#day-two-guide-entropy).
+* Check that all nodes in the cluster have [high entropy value](https://docs.openshift.com/container-platform/3.11/day_two_guide/run_once_tasks.html#day-two-guide-entropy).
 
 ### Target cluster
 
@@ -107,6 +107,8 @@ You can perform the following health checks on an OpenShift 4.x target cluster:
 
 * Review the [migration considerations](https://access.redhat.com/documentation/en-us/openshift_container_platform/4.5/html-single/migration/index#migration-considerations).
 
-* Check that the identity provider is working on the source and target clusters.
+* Verify the identity provider on the source and target clusters.
 
-* Verify that the network visibility between namespaces in the OpenShift 4.x target cluster is as expected, especially if the OpenShift 3.9+ source cluster uses the [**multitenant** network plugin](https://docs.openshift.com/container-platform/3.11/architecture/networking/sdn.html#architecture-additional-concepts-sdn).  Openshift 4.x uses the [**networkpolicy** network plugin](https://docs.openshift.com/container-platform/4.5/networking/network_policy/about-network-policy.html) with an open policy by default in which all pods and services are accessible from any project.
+* Verify the network visibility between namespaces on the OpenShift 4.x target cluster, especially if the OpenShift 3.9+ source cluster uses the [**multitenant** network plugin](https://docs.openshift.com/container-platform/3.11/architecture/networking/sdn.html#architecture-additional-concepts-sdn).
+  
+  Openshift 4.x uses the [**networkpolicy** network plugin](https://docs.openshift.com/container-platform/4.5/networking/network_policy/about-network-policy.html), which has an open policy by default. All pods and services are accessible from any project.
