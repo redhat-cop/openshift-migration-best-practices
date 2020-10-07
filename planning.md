@@ -111,6 +111,7 @@ The migration workflow is similar to the following procedure:
 
 This section describes migration environment considerations to consider when you are planning your migration:
 
+* Consider the OpenShift 4 feature gaps with OCP 3.11
 * Consider how stored data will be migrated if you are migrating stateful applications.
 * Consider how much downtime your application can tolerate during migration.
 * Plan for traffic redirection during migration.
