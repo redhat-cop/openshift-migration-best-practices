@@ -1,21 +1,23 @@
-[![Home](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/home.png)](./README.md) | [Running the migration <](./running-the-migration.md) Troubleshooting
----
+## [![Home](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/home.png)](./README.md) | [Running the migration <](./running-the-migration.md) Troubleshooting
+
 # Troubleshooting
 
 This section describes common troubleshooting procedures.
 
-* **[MTC data model](#mtc-data-model)**
-* **[Debugging tips](#debugging-tips)**
-* **[Using `must-gather`](#using-must-gather)**
-* **[Performance metrics](#performance-metrics)**
-* **[Cleaning up a failed migration](#cleaning-up-a-failed-migration)**
-* **[Deleting the MTC Operator and resources](#deleting-the-mtc-operator-and-resources)**
+- **[MTC data model](#mtc-data-model)**
+- **[Debugging tips](#debugging-tips)**
+- **[Using `must-gather`](#using-must-gather)**
+- **[Performance metrics](#performance-metrics)**
+- **[Cleaning up a failed migration](#cleaning-up-a-failed-migration)**
+- **[Deleting the MTC Operator and resources](#deleting-the-mtc-operator-and-resources)**
 
 Upstream doc for improving debug experience
-* https://github.com/konveyor/enhancements/tree/master/enhancements/debug
+
+- https://github.com/konveyor/enhancements/tree/master/enhancements/debug
 
 Debug flowchart (in progress)
-* [MTC Debug flowchart](https://app.lucidchart.com/documents/view/d0907ce1-ccf1-4226-86eb-e5332f9d42a4/0_0)
+
+- [MTC Debug flowchart](https://app.lucidchart.com/documents/view/d0907ce1-ccf1-4226-86eb-e5332f9d42a4/0_0)
 
 # MTC custom resources
 
@@ -33,17 +35,16 @@ You can view the resources of a migration plan in the MTC web console:
 
 1. Click the Options menu beside a migration plan and select **View migration plan resources**.
 
-    The migration plan resources are displayed as a tree.
+   The migration plan resources are displayed as a tree.
 
 2. Click the arrow of a **Backup** or **Restore** object to view its pods.
-   
 3. Click the Copy button of a pod to copy the `oc get` command to your clipboard.
 
-    You can paste the command to the CLI to view the resource details.
+   You can paste the command to the CLI to view the resource details.
 
 4. Click **View Raw** to inspect a pod.
 
-    The resource is displayed in JSON format.
+   The resource is displayed in JSON format.
 
 ![Resource Debug Kebab Option](./images/ResourceDebugKebabOption.png)
 
@@ -53,7 +54,7 @@ Typically, the objects that you are interested in depend on the stage at which t
 migration failed. The [MTC debug flowchart](https://app.lucidchart.com/documents/view/d0907ce1-ccf1-4226-86eb-e5332f9d42a4/0_0) provides information about what objects are relevant depending on this failure stage.
 
 > NOTE: Stage migrations will only have a single pair of Backup and Restore objects,
-> while a Final migration will have *two* pairs of Backup and Restore objects.
+> while a Final migration will have _two_ pairs of Backup and Restore objects.
 > This can be considered a low level implementation detail, but the initial
 > backup is performed to capture the original, unaltered state of the application
 > and its Kubernetes objects. It is the source of truth. The application is then
@@ -83,9 +84,10 @@ TODO: Need to update with Backup/Restore queries
 You can use the `must-gather` tool to collect information for troubleshooting or for opening a customer support case on the [Red Hat Customer Portal](https://access.redhat.com/). The `openshift-migration-must-gather-rhel8` image collects migration-specific logs and Custom Resource data that are not collected by the default `must-gather` image.
 
 Run the `must-gather` command on your cluster:
-````
+
+```
 $ oc adm must-gather --image=registry.redhat.io/rhcam-1-2/openshift-migration-must-gather-rhel8
-````
+```
 
 ## Previewing metrics on local Prometheus server
 
@@ -141,44 +143,49 @@ metadata:
 The following procedure removes the MTC Operator and cluster-scoped resources:
 
 1. Delete the Migration Controller and its resources:
-    ```` 
-    $ oc delete migrationcontroller <resource_name>
-    ````
-    Wait for the MTC Operator to finish deleting the resources.
+
+   ```
+   $ oc delete migrationcontroller <resource_name>
+   ```
+
+   Wait for the MTC Operator to finish deleting the resources.
 
 2. Uninstall the MTC Operator:
-    * OpenShift 4: Uninstall the Operator in the [web console](https://docs.openshift.com/container-platform/4.5/operators/olm-deleting-operators-from-cluster.html) or by running the following command: 
-    ````
-    $ oc delete ns openshift-migration
-    ````
-    * Openshift 3: Uninstall the operator by deleting it:
-    ````
-    $ oc delete -f operator.yml
-    ````
 
-4. Delete the cluster-scoped resources:
-    * Migration custom resource definition:
-    ````
-    $ oc get crds | grep 'migration.openshift.io' | awk '{print $1}' | xargs -I{} oc delete crd {}
-    ````  
-    * Velero custom resource definition:
-    ````
-    $ oc get crds | grep velero | awk '{print $1}' | xargs -I{} oc delete crd {}
-    ````  
-    * Migration cluster role:
-    ````
-    $ oc get clusterroles | grep 'migration.openshift.io' | awk '{print $1}' | xargs -I{} oc delete clusterrole {}
-    ````  
-    * Velero cluster role:
-    ````
-    $ oc get clusterroles | grep velero | awk '{print $1}' | xargs -I{} oc delete clusterrole {}
-    ````  
-    * Migration cluster role bindings:
-    ````
-    $ oc get clusterrolebindings | grep 'migration.openshift.io' | awk '{print $1}' | xargs -I{} oc delete clusterrolebindings {}
-    ````  
-    * Velero cluster role bindings:
-    ````
-    $ oc get clusterrolebindings | grep velero | awk '{print $1}' | xargs -I{} oc delete clusterrolebindings {}
-    ```` 
+   - OpenShift 4: Uninstall the Operator in the [web console](https://docs.openshift.com/container-platform/4.5/operators/olm-deleting-operators-from-cluster.html) or by running the following command:
 
+   ```
+   $ oc delete ns openshift-migration
+   ```
+
+   - Openshift 3: Uninstall the operator by deleting it:
+
+   ```
+   $ oc delete -f operator.yml
+   ```
+
+3. Delete the cluster-scoped resources:
+   - Migration custom resource definition:
+   ```
+   $ oc get crds | grep 'migration.openshift.io' | awk '{print $1}' | xargs -I{} oc delete crd {}
+   ```
+   - Velero custom resource definition:
+   ```
+   $ oc get crds | grep velero | awk '{print $1}' | xargs -I{} oc delete crd {}
+   ```
+   - Migration cluster role:
+   ```
+   $ oc get clusterroles | grep 'migration.openshift.io' | awk '{print $1}' | xargs -I{} oc delete clusterrole {}
+   ```
+   - Velero cluster role:
+   ```
+   $ oc get clusterroles | grep velero | awk '{print $1}' | xargs -I{} oc delete clusterrole {}
+   ```
+   - Migration cluster role bindings:
+   ```
+   $ oc get clusterrolebindings | grep 'migration.openshift.io' | awk '{print $1}' | xargs -I{} oc delete clusterrolebindings {}
+   ```
+   - Velero cluster role bindings:
+   ```
+   $ oc get clusterrolebindings | grep velero | awk '{print $1}' | xargs -I{} oc delete clusterrolebindings {}
+   ```
