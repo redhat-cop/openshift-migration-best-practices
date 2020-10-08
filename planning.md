@@ -135,7 +135,7 @@ The following diagram describes a CI/CD workflow:
 
 ## Network traffic migration strategies
 
-This section describes strategies for migrating network traffic for stateless aplications.
+This section describes strategies for migrating network traffic for stateless applications.
 
 Each strategy is based on this scenario:
 
