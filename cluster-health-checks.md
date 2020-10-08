@@ -19,9 +19,7 @@ This list is not comprehensive and the verification of these checks does not gua
 
 You can perform the following health checks on an OpenShift 3.9+ source cluster:
 
-- Check that the Openshift [version is supported](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-prerequisites_migrating-3-4) by the migration tool.
-
-- Verify that all nodes in the OpenShift cluster contain an active OpenShift Container Platform subscription. This will avoid issues in case support needs to be contacted.
+* Check that the OpenShift [version is supported](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-prerequisites_migrating-3-4) by the migration tool. 
 
 - Install and configure [Prometheus cluster monitoring](https://docs.openshift.com/container-platform/3.11/install_config/prometheus_cluster_monitoring.html). Prometheus provides a detailed view of the health of the cluster components.
 
