@@ -1,4 +1,4 @@
-## [![Home](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/home.png)](./README.md) | [Premigration testing <](./premigration-testing.md) Running the migration [> Troubleshooting](./troubleshooting.md)
+## [![Home](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/home.png)](./README.md) | [Pre-migration testing <](./premigration-testing.md) Running the migration [> Troubleshooting](./troubleshooting.md)
 
 # Running the migration
 
@@ -38,7 +38,7 @@ Prepare your migration environment by checking the following:
   - Ensure that load balancing is correctly configured on the target cluster.
 - Resources:
   - Check whether your application uses a service network or an external route to communicate with services.
-  - If your application uses non-namespaced resources, you must re-create them on the target cluster.
+  - If your application uses `non-namespaced resources`, you must re-create them on the target cluster.
   - You must migrate images from the internal image registry if you are not using an external image registry. If they cannot be migrated, you must re-create them manually on the target cluster.
   - Increase the [CPU and memory limits of the Migration Controller](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/migrating-applications-with-cam-3-4.html#migration-changing-migration-plan-limits_migrating-3-4) for large migrations.
   - Use the [`prune` command](https://docs.openshift.com/container-platform/4.5/applications/pruning-objects.html) to remove old builds, deployments, and images from each namespace being migrated.
@@ -113,7 +113,7 @@ If the application has dependencies, you should migrate the application and the 
 
 Create and save _one_ migration plan at a time. Do not create and save multiple migration plans.
 
-Currently, the Migration Controller watches all the namespaces and associated resources in a migration plan. Multiple migration plans result in an additional load on the source cluster and the MTC host cluster. This may change in the future: [MIG-319 - Allow migration plans to be precreated without adding extra load to source or host cluster](https://issues.redhat.com/browse/MIG-319).
+Currently, the Migration Controller watches all the namespaces and associated resources in a migration plan. Multiple migration plans result in an additional load on the source cluster and the MTC host cluster. This may change in the future: [MIG-319 - Allow migration plans to be pre-created without adding extra load to source or host cluster](https://issues.redhat.com/browse/MIG-319).
 
 ### PV move
 
@@ -177,13 +177,13 @@ Stage migrations normally reduce the duration of the final migration. However, i
 
 The following table compares stage migration and final migration:
 
-|                          | Stage migration | Final migration      |
-| ------------------------ | --------------- | -------------------- |
-| **Kubernetes resources** | No<sup>1</sup>  | Yes                  |
-| **PV move**              | No              | Yes                  |
-| **PV copy**              | Yes             | Yes                  |
-| **Images**               | Yes             | Yes                  |
-| **Application state**    | Running         | Quiesced<sup>2</sup> |
+|                          | Stage migration  | Final migration        |
+| ------------------------ | ---------------- | ---------------------- |
+| **Kubernetes resources** | `No`<sup>1</sup> | `Yes`                  |
+| **PV move**              | `No`             | `Yes`                  |
+| **PV copy**              | `Yes`            | `Yes`                  |
+| **Images**               | `Yes`            | `Yes`                  |
+| **Application state**    | `Running`        | `Quiesced`<sup>2</sup> |
 
 <sup>1</sup> Exceptions: PV copy and images.
 <sup>2</sup> All pods are scaled to `0` for a consistent view of the data.
