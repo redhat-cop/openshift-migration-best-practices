@@ -1,0 +1,8 @@
+{
+  "ignoreUrls": true,
+  "findRepeatWords": true,
+  "maxRequests": 5,
+  "ignoreDigits": true,
+  "lang": "en",
+  "dictionary": []
+}
