@@ -109,11 +109,14 @@ The migration workflow is similar to the following procedure:
 
 ## Migration environment considerations
 
-This section describes migration environment considerations to consider when you are planning your migration:
+OpenShift 4 introduces architectural changes and enhancements. The procedures that you used to manage your OpenShift 3 cluster might not apply to OpenShift 4.
 
-* Consider how stored data will be migrated if you are migrating stateful applications.
-* Consider how much downtime your application can tolerate during migration.
-* Plan for traffic redirection during migration.
+You must consider the following:
+
+* [Important differences between OpenShift 3 and 4 and their impact on migration](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/planning-migration-3-to-4.html)
+* How stored data will be migrated for stateful applications
+* How much downtime your application can tolerate during migration
+* How traffic will be redirected during migration
 
 ## Migration workflows
 
