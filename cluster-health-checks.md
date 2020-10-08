@@ -4,7 +4,7 @@
 
 This section contains a list of checks to run on your OpenShift 3.9+ source and 4.x target clusters before migration. The purpose of these checks is to detect issues that might affect the migration process.
 
-This list is not comprehensive and the verification of these checks does not guarantee a successful migration.  We recommend getting in contact with the support team before migrating a cluster from Openshift 3 to 4, especially if the cluster is in a production environment.
+This list is not comprehensive and the verification of these checks does not guarantee a successful migration.  We recommend getting in contact with the support team before migrating a cluster from OpenShift 3 to 4, especially if the cluster is in a production environment.
 
 * **[General health checks](#general-health-checks)**
   * [Source cluster](#source-cluster)
@@ -19,7 +19,7 @@ This list is not comprehensive and the verification of these checks does not gua
 
 You can perform the following health checks on an OpenShift 3.9+ source cluster:
 
-* Check that the Openshift [version is supported](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-prerequisites_migrating-3-4) by the migration tool. 
+* Check that the OpenShift [version is supported](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-prerequisites_migrating-3-4) by the migration tool. 
 
 * Verify that all nodes in the OpenShift cluster contain an active OpenShift Container Platform subscription. This will avoid issues in case support needs to be contacted. 
 
@@ -91,7 +91,7 @@ You can perform the following health checks on an OpenShift 4.x target cluster:
 
 * Check that the OpenShift 4.x target cluster meets the minimum hardware requirements for the specific platform and installation method. For example, a bare metal installation has [specific minimum resource requirements](https://docs.openshift.com/container-platform/4.5/installing/installing_bare_metal/installing-bare-metal.html#minimum-resource-requirements_installing-bare-metal).
 
-* Verify that the OpenShift 4.x target cluster contains storage classes for the same types (block, file, object) as the Openshift 3.9+ source cluster.  In particular verify that the default storage class is of the same type in both clusters.
+* Verify that the OpenShift 4.x target cluster contains storage classes for the same types (block, file, object) as the OpenShift 3.9+ source cluster.  In particular verify that the default storage class is of the same type in both clusters.
 
 * Check the available bandwidth between the source and target clusters. Less than 10 Gbps is not recommended.
 
@@ -111,4 +111,4 @@ You can perform the following health checks on an OpenShift 4.x target cluster:
 
 * Verify the network visibility between namespaces on the OpenShift 4.x target cluster, especially if the OpenShift 3.9+ source cluster uses the [**multitenant** network plugin](https://docs.openshift.com/container-platform/3.11/architecture/networking/sdn.html#architecture-additional-concepts-sdn).
   
-  Openshift 4.x uses the [**networkpolicy** network plugin](https://docs.openshift.com/container-platform/4.5/networking/network_policy/about-network-policy.html), which has an open policy by default. All pods and services are accessible from any project.
+* OpenShift 4.x uses the [**networkpolicy** network plugin](https://docs.openshift.com/container-platform/4.5/networking/network_policy/about-network-policy.html), which has an open policy by default. All pods and services are accessible from any project.

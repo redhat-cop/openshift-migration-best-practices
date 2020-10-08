@@ -151,7 +151,7 @@ The following procedure removes the MTC Operator and cluster-scoped resources:
     ````
     $ oc delete ns openshift-migration
     ````
-    * Openshift 3: Uninstall the operator by deleting it:
+    * OpenShift 3: Uninstall the operator by deleting it:
     ````
     $ oc delete -f operator.yml
     ````
