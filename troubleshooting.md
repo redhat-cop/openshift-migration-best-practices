@@ -52,31 +52,45 @@ You can view the resources of a migration plan in the MTC web console:
 Typically, the objects that you are interested in depend on the stage at which the
 migration failed. The [MTC debug flowchart](https://app.lucidchart.com/documents/view/d0907ce1-ccf1-4226-86eb-e5332f9d42a4/0_0) provides information about what objects are relevant depending on this failure stage.
 
-> NOTE: Stage migrations will only have a single pair of Backup and Restore objects,
-> while a Final migration will have *two* pairs of Backup and Restore objects.
-> This can be considered a low level implementation detail, but the initial
-> backup is performed to capture the original, unaltered state of the application
-> and its Kubernetes objects. It is the source of truth. The application is then
-> quiesced and a stage backup is performed to back up the storage-
-> related resources (PV, PVC, the data itself). These storage objects are restored
-> on the target cluster, followed by a final restore to restore from the original
-> application's source of truth.
+Stage migrations have one Backup and one Restore object.
 
-## Querying the CLI
+Final migrations have two Backup and two Restore objects. The first Backup object captures the original, unaltered state of the application and its Kubernetes objects. This Backup is the source of truth. Then, the application is quiesced and a second Backup captures the storage-related resources (PVs, PVCs, data). 
+
+The first Restore restores these storage objects on the target cluster. The final Restore restores the original application Backup to the target cluster.
+
+## Querying the migration resources from the CLI
 
 The migration debug tree can be viewed and traced by querying specific label selectors.
 
-The following example obtains all the `migmigration` resources that are associated with the `test` plan:
+- To view all `migmigration` objects associated with the `test` plan:
+    ```
+    $ oc get migmigration -l 'migration.openshift.io/migplan-name=test'
+    ```
+    Output:
+    ```
+    NAME                                  READY  PLAN  STAGE  ITINERARY  PHASE
+    09a8bf20-fdc5-11ea-a447-cb5249018d21         test  false  Final      Completed
+    ```
 
-```
-$ oc get migmigration -l 'migration.openshift.io/migplan-name=test'
-NAME                                  READY  PLAN  STAGE  ITINERARY  PHASE
-09a8bf20-fdc5-11ea-a447-cb5249018d21         test  false  Final      Completed
-```
+    The columns display the associated plan name, itinerary step, and phase.
 
-The columns display the associated plan name, itinerary step, and phase.
+- To view `backup` objects:
+    ```
+    $ oc get backup -n openshift-migration
+    ```
+    Output:
+    ```
+    NAME                                   AGE
+    88435fe0-c9f8-11e9-85e6-5d593ce65e10   6m42s
+    ```
+    Use the same command to view `restore` objects.
 
-TODO: Need to update with Backup/Restore queries
+- To inspect a `backup` object:
+    ```
+    $ oc describe backup 88435fe0-c9f8-11e9-85e6-5d593ce65e10 -n openshift-migration
+    ```
+
+See [Viewing migration custom resources](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/troubleshooting-3-4.html#migration-viewing-migration-crs_migrating-3-4) for more information.
 
 # Using `must-gather`
 
@@ -84,28 +98,29 @@ You can use the `must-gather` tool to collect information for troubleshooting or
 
 Run the `must-gather` command on your cluster:
 ````
-$ oc adm must-gather --image=registry.redhat.io/rhcam-1-2/openshift-migration-must-gather-rhel8
+$ oc adm must-gather --image=openshift-migration-must-gather-rhel8:v1.3.0
 ````
 
 ## Previewing metrics on local Prometheus server
 
-`must-gather` can be used to produce a dump of the last day of metrics data,
-which can then be viewed with a local Prometheus instance following the
-instructions in the [konveyor must-gather repo](https://github.com/konveyor/must-gather#preview-metrics-on-local-prometheus-server).
+You can use `must-gather` to create a metrics data directory dump from the last day:
+````
+$ oc adm must-gather --image quay.io/konveyor/must-gather:latest -- /usr/bin/gather_metrics_dump
+````
+
+You can view the data with a [local Prometheus instance](https://github.com/konveyor/must-gather#preview-metrics-on-local-prometheus-server).
 
 # Performance metrics
 
-Details about the metrics that are recorded by the MTC controller can be found
-in the [mig-operator documentation](https://github.com/konveyor/mig-operator/blob/master/docs/usage/Metrics.md#accessing-mig-controller-prometheus-metrics),
-including a [set of useful queries](https://github.com/konveyor/mig-operator/blob/master/docs/usage/Metrics.md#useful-queries) that are available for performance monitoring.
+For information about the metrics recorded by the MTC controller, see the [`mig-operator` documentation](https://github.com/konveyor/mig-operator/blob/master/docs/usage/Metrics.md#accessing-mig-controller-prometheus-metrics).
+
+This documentation includes [useful queries](https://github.com/konveyor/mig-operator/blob/master/docs/usage/Metrics.md#useful-queries) for performance monitoring.
 
 # Cleaning up a failed migration
 
 ## Deleting resources
 
-Ensure stage pods have been cleaned up. If a migration fails during stage or copy,
-the 'stage' pods will be retained to allow debugging. Before proceeding with a
-reattempt of the migration the stage pods need to be manually removed.
+Ensure that stage pods are cleaned up. If a migration fails during stage or copy, the stage pods are retained to allow debugging. Before retrying a migration, you must delete the stage pods manually.
 
 ## Unquiescing an application
 
