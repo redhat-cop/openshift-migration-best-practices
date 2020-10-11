@@ -117,6 +117,7 @@ You must consider the following:
 * How stored data will be migrated for stateful applications
 * How much downtime your application can tolerate during migration
 * How traffic will be redirected during migration
+* Restricted environment due to the networok policy (e.g. firewall), private image registry, and security restrictions
 
 ## Migration workflows
 
