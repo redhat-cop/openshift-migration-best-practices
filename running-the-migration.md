@@ -1,4 +1,4 @@
-[![Home](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/home.png)](./README.md) |  [Premigration testing <](./premigration-testing.md) Running the migration [> Troubleshooting](./troubleshooting.md)
+[![Home](./images/home.png)](./README.md) |  [Premigration testing <](./premigration-testing.md) Running the migration [> Troubleshooting](./troubleshooting.md)
 ---
 # Running the migration
 

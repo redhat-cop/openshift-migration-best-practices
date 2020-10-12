@@ -1,4 +1,4 @@
-[![Home](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/home.png)](./README.md) |  [Cluster health checks <](./cluster-health-checks.md) Premigration testing [> Running the migration](./running-the-migration.md)
+[![Home](./images/home.png)](./README.md) |  [Cluster health checks <](./cluster-health-checks.md) Premigration testing [> Running the migration](./running-the-migration.md)
 ---
 # Premigration testing
 
