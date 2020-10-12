@@ -1,4 +1,4 @@
-[![Home](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/home.png) | <](./README.md) Planning [> Cluster health checks](./cluster-health-checks.md)
+[![Home](./images/home.png) | <](./README.md) Planning [> Cluster health checks](./cluster-health-checks.md)
 ---
 # Planning
 
@@ -151,13 +151,13 @@ Each strategy is based on this scenario:
 
 At migration, the 3.x wildcard DNS record is changed to point to the 4.x router virtual IP address (VIP).
 
-![BigBang](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/migration-strategy-bigbang.png)
+![BigBang](./images/migration-strategy-bigbang.png)
 
 ### Individual applications
 
 At migration, a new record is created for each application with the 3.x FQDN/host name pointing to the 4.x router VIP. This record takes precedence over the 3.x wildcard DNS record.
 
-![Individual](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/migration-strategy-individual.png)
+![Individual](./images/migration-strategy-individual.png)
 
 ### Canary-style migration of individual applications
 
@@ -169,7 +169,7 @@ The proxy entry for the application is configured to route `X`% of the traffic t
 
 `X` is gradually moved from `100` to `0`.
 
-![Canary](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/migration-strategy-canary.png)
+![Canary](./images/migration-strategy-canary.png)
 
 ### Audience-based migration of individual applications
 
@@ -181,5 +181,5 @@ The proxy entry for the application is configured to route traffic matching a gi
 
 Traffic is moved to the 4.x VIP in waves until all the traffic is on the 4.x VIP.
 
-![Audience](https://github.com/redhat-cop/openshift-migration-best-practices/raw/master/images/migration-strategy-audience.png)
+![Audience](./images/migration-strategy-audience.png)
 
