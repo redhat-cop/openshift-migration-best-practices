@@ -101,7 +101,9 @@ You can perform the following health checks on an OpenShift 4.x target cluster:
 
 * Check cluster compute and memory utilization: `$ oc adm top node`
 
-* Check the average response time of API calls in the source cluster. Less than 50 ms is recommended.
+* Check the average response time of API calls in the source cluster. Less than 50 ms is recommended.  
+
+* Check etcd storage performance on both the source and target clusters.  [How to Use 'fio' to Check Etcd Disk Performance](https://access.redhat.com/solutions/4885641)
 
 ## Additional checks
 
