@@ -6,6 +6,7 @@ This section describes common troubleshooting procedures.
 
 * **[MTC data model](#mtc-data-model)**
 * **[Debugging tips](#debugging-tips)**
+* **[Debugging WebUI](#debugging-webui)**
 * **[Using `must-gather`](#using-must-gather)**
 * **[Performance metrics](#performance-metrics)**
 * **[Cleaning up a failed migration](#cleaning-up-a-failed-migration)**
@@ -91,6 +92,29 @@ The migration debug tree can be viewed and traced by querying specific label sel
     ```
 
 See [Viewing migration custom resources](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/troubleshooting-3-4.html#migration-viewing-migration-crs_migrating-3-4) for more information.
+
+# Debugging WebUI
+
+## Web browser sees 'A certificate error has occurred....'
+
+* Example of error message displayed in web browser
+
+    ```
+        A certificate error has occurred, likely due to the usage of self signed certificates in one of the clusters. Please try to visit the failed url and accept the CA: https://api.ocp.foo.com:6443/.well-known/oauth-authorization-server
+        The correct way to address this is to install your self CA into your browser.
+        NOTE: The contents of the resulting page may report "unauthorized". This is expected. After accepting the certificate, please reload the app.
+    ```
+
+    * Possible causes to consider
+        * Self signed SSL certificates are used and have not been configured to be trusted in the browser
+            * Need to trust the CA's involved in signing 
+                1. API Server 
+                1. Routes
+                1. OAuth 
+    * Network issues (possible proxy configuration missing)
+        * For MTC 1.3.1 and below, the browser performs part of the oauth workflow client side and will need to communicate to both 1) API Server 2) OAuth server
+            * Check if proxy settings need to be updated in browser.  Related to [Bug 1890675](https://bugzilla.redhat.com/show_bug.cgi?id=1890675)
+        * For MTC 1.3.2 and newer, the oauth workflow is moving to backend so browser will communicate with 1) Nodejs server serving the javascript bundle and processing oauth 2) API Server. Related to [Bug 1878824](https://bugzilla.redhat.com/show_bug.cgi?id=1878824)
 
 # Using `must-gather`
 
