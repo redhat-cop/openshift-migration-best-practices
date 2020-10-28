@@ -6,7 +6,7 @@ This section describes common troubleshooting procedures.
 
 * **[MTC data model](#mtc-data-model)**
 * **[Debugging tips](#debugging-tips)**
-* **[Debugging WebUI](#debugging-webui)**
+* **[Error messages](#error-messages)**
 * **[Using `must-gather`](#using-must-gather)**
 * **[Performance metrics](#performance-metrics)**
 * **[Cleaning up a failed migration](#cleaning-up-a-failed-migration)**
@@ -93,28 +93,43 @@ The migration debug tree can be viewed and traced by querying specific label sel
 
 See [Viewing migration custom resources](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/troubleshooting-3-4.html#migration-viewing-migration-crs_migrating-3-4) for more information.
 
-# Debugging WebUI
+# Error messages
 
-## Web browser sees 'A certificate error has occurred....'
+## `certificate error` when logging in to the MTC console for the first time
 
-* Example of error message displayed in web browser
+The following error message might appear when you log in to the MTC console for the first time:
 
-    ```
-        A certificate error has occurred, likely due to the usage of self signed certificates in one of the clusters. Please try to visit the failed url and accept the CA: https://api.ocp.foo.com:6443/.well-known/oauth-authorization-server
-        The correct way to address this is to install your self CA into your browser.
-        NOTE: The contents of the resulting page may report "unauthorized". This is expected. After accepting the certificate, please reload the app.
-    ```
+```
+A certificate error has occurred, likely caused by using self-signed CA certificates in one of the clusters. Navigate to the following URL and accept the certificate:
+`https://ocp-cluster.com:6443/.well-known/oauth-authorization-server`.
 
-    * Possible causes to consider
-        * Self signed SSL certificates are used and have not been configured to be trusted in the browser
-            * Need to trust the CA's involved in signing 
-                1. API Server 
-                1. Routes
-                1. OAuth 
-    * Network issues (possible proxy configuration missing)
-        * For MTC 1.3.1 and below, the browser performs part of the oauth workflow client side and will need to communicate to both 1) API Server 2) OAuth server
-            * Check if proxy settings need to be updated in browser.  Related to [Bug 1890675](https://bugzilla.redhat.com/show_bug.cgi?id=1890675)
-        * For MTC 1.3.2 and newer, the oauth workflow is moving to backend so browser will communicate with 1) Nodejs server serving the javascript bundle and processing oauth 2) API Server. Related to [Bug 1878824](https://bugzilla.redhat.com/show_bug.cgi?id=1878824)
+If an "Unauthorized" message appears after you have accepted the certificate, refresh the web page.
+
+To fix this issue permanently, add the certificate to your web browser's trust store.
+```
+
+Possible causes are self-signed certificates or network access issues.
+
+Self-signed CA certificates:
+
+* You can navigate to the `oauth-authorization-server` URL and accept the certificate.
+* You can add self-signed certificates for the API server, OAuth server, and routes to your web browser's trusted store.
+
+Network access:
+* You can inspect the elements of the MTC console with your browser's web inspector to view the network connections.
+* MTC 1.3.1 and earlier: The MTC console performs OAuth authentication on the client side.
+      
+    The console requires uninterrupted network access to the API server and the OAuth server.
+
+* MTC 1.3.2 and later: OAuth authentication is performed on the backend.
+      
+    The console requires uninterrupted network access to the Node.js server, which provides the JavaScript bundle and performs OAuth authentication, and the API server. See [BZ#1878824](https://bugzilla.redhat.com/show_bug.cgi?id=1878824).
+
+## `Connection has timed out` message after accepting CA certificate
+
+If you have accepted a self-signed certificate and a blank page appears, followed by a `Connection has timed out` message, the likely cause is a web proxy blocking access to the OAuth server.
+    
+Configure the web proxy configuration to allow access to the `oauth-authorization-server` URL. See [BZ#1890675](https://bugzilla.redhat.com/show_bug.cgi?id=1890675).
 
 # Using `must-gather`
 
