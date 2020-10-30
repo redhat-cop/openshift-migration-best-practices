@@ -113,10 +113,10 @@ OpenShift 4 introduces architectural changes and enhancements. The procedures th
 
 You must consider the following:
 
-* [Important differences between OpenShift 3 and 4 and their impact on migration](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/planning-migration-3-to-4.html)
-* How stored data will be migrated for stateful applications
-* How much downtime your application can tolerate during migration
-* How traffic will be redirected during migration
+* [Important differences between OpenShift 3 and 4 and their impact on migration](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/planning-migration-3-to-4.html).
+* How stored data will be migrated for stateful applications.
+* How much downtime your application can tolerate during migration.
+* How traffic will be redirected during migration.
 
 ## Migration workflows
 
