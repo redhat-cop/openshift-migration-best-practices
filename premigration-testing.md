@@ -34,11 +34,11 @@ The Operator Lifecycle Manager (OLM) pushes MTC Operator updates to the OpenShif
 In the web console, check the 'OLM Managed' setting in the 'MigrationController' manifest of each cluster:
 
 * OpenShift 4 uses OLM:
-  ```
+  ```yaml
   olm_managed: true
   ```
 * OpenShift 3 does not use OLM:
-  ```
+  ```yaml
   olm_managed: false
   ```
 
