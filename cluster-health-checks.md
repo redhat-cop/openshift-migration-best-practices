@@ -23,12 +23,12 @@ You can perform the following health checks on an OpenShift 3.9+ source cluster:
 * Verify that all nodes in the OpenShift cluster contain an active OpenShift Container Platform subscription. This will avoid issues in case support needs to be contacted. 
 * Install and configure [Prometheus cluster monitoring](https://docs.openshift.com/container-platform/3.11/install_config/prometheus_cluster_monitoring.html). Prometheus provides a detailed view of the health of the cluster components.
 * Check the node status to verify that all nodes are in a **Ready** state: 
-  ```
+  ```sh
   $ oc get nodes
   ```
 
 * Check the persistent volumes (PVs):
-  ```
+  ```sh
   $ oc get pv
   ```
   * Mounted PVs
@@ -37,18 +37,23 @@ You can perform the following health checks on an OpenShift 3.9+ source cluster:
   * PVs stuck in terminating state
 
 * Check pods for status that is not **Running** or **Completed**.  Use the following command because pods might not display an error state:
-  ```
+  ```sh
   $ oc get pods --all-namespaces|egrep -v 'Running | Completed'
   ```
 
 * Check for pods with a high restart count. Even if they are in a **Running** state, a high restart count might indicate underlying problems.
+  ```sh
+  # Get pods with a restartCount above 3
+  $ oc get pods --all-namespaces --field-selector=status.phase=Running -o json | jq '.items[]|select(any( .status.containerStatuses[]; .restartCount > 3))|.metadata.name'
+  ```
 * Check the [health of the **etcd** cluster](https://access.redhat.com/articles/3093761).
 * Check the [network connectivity](https://docs.openshift.com/container-platform/3.11/day_two_guide/environment_health_checks.html#connectivity-on-master-hosts) between master hosts.
 * Check the [API service status](https://docs.openshift.com/container-platform/3.11/day_two_guide/environment_health_checks.html#day-two-guide-api-service-status).
 * Check that the cluster certificates are not close to expiration and will be valid for the duration of the migration process. You can use the [`easy-mode` ansible playbook](https://docs.openshift.com/container-platform/3.11/install_config/redeploying_certificates.html#install-config-cert-expiry) to check the certificates.
 * Check for pending certificate signing requests:
-  ```
+  ```sh
   $ oc get crs
+  $ oc get csr
   ```
 
 * Check that [time synchronization](https://docs.openshift.com/container-platform/3.11/day_two_guide/run_once_tasks.html#day-two-guide-ntp-synchronization) is consistent across the whole cluster.

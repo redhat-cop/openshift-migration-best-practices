@@ -64,7 +64,7 @@ The first Restore restores these storage objects on the target cluster. The fina
 The migration debug tree can be viewed and traced by querying specific label selectors.
 
 - To view all `migmigration` objects associated with the `test` plan:
-    ```
+    ```sh
     $ oc get migmigration -l 'migration.openshift.io/migplan-name=test'
     ```
     Output:
@@ -76,7 +76,7 @@ The migration debug tree can be viewed and traced by querying specific label sel
     The columns display the associated plan name, itinerary step, and phase.
 
 - To view `backup` objects:
-    ```
+    ```sh
     $ oc get backup -n openshift-migration
     ```
     Output:
@@ -87,7 +87,7 @@ The migration debug tree can be viewed and traced by querying specific label sel
     Use the same command to view `restore` objects.
 
 - To inspect a `backup` object:
-    ```
+    ```sh
     $ oc describe backup 88435fe0-c9f8-11e9-85e6-5d593ce65e10 -n openshift-migration
     ```
 
@@ -136,14 +136,14 @@ Configure the web proxy configuration to allow access to the `oauth-authorizatio
 You can use the `must-gather` tool to collect information for troubleshooting or for opening a customer support case on the [Red Hat Customer Portal](https://access.redhat.com/). The `openshift-migration-must-gather-rhel8` image collects migration-specific logs and Custom Resource data that are not collected by the default `must-gather` image.
 
 Run the `must-gather` command on your cluster:
-````
+````sh
 $ oc adm must-gather --image=openshift-migration-must-gather-rhel8:v1.3.0
 ````
 
 ## Previewing metrics on local Prometheus server
 
 You can use `must-gather` to create a metrics data directory dump from the last day:
-````
+````sh
 $ oc adm must-gather --image quay.io/konveyor/must-gather:latest -- /usr/bin/gather_metrics_dump
 ````
 
@@ -167,13 +167,13 @@ If your application was quiesced during migration, you should unquiesce it by sc
 
 This can be done manually by editing the deployment primitive (Deployment, DeploymentConfig, etc.) and setting the `spec.replicas` field back to its original, non-zero value:
 
-```
+```sh
 $ oc edit deployment <deployment_name>
 ```
 
 Alternatively, you can scale your deployment with the `oc scale` command:
 
-```
+```sh
 $ oc scale deployment <deployment_name> --replicas=<desired_replicas>
 ```
 
@@ -181,7 +181,7 @@ $ oc scale deployment <deployment_name> --replicas=<desired_replicas>
 
 While quiescing a source application, MTC annotates the original replica count on the deployment object for reference:
 
-```
+```yaml
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -195,44 +195,44 @@ metadata:
 The following procedure removes the MTC Operator and cluster-scoped resources:
 
 1. Delete the Migration Controller and its resources:
-    ```` 
+    ````sh
     $ oc delete migrationcontroller <resource_name>
     ````
     Wait for the MTC Operator to finish deleting the resources.
 
 2. Uninstall the MTC Operator:
     * OpenShift 4: Uninstall the Operator in the [web console](https://docs.openshift.com/container-platform/4.5/operators/olm-deleting-operators-from-cluster.html) or by running the following command: 
-    ````
-    $ oc delete ns openshift-migration
-    ````
+      ````sh
+      $ oc delete ns openshift-migration
+      ````
     * OpenShift 3: Uninstall the operator by deleting it:
-    ````
-    $ oc delete -f operator.yml
-    ````
+      ````sh
+      $ oc delete -f operator.yml
+      ````
 
 4. Delete the cluster-scoped resources:
     * Migration custom resource definition:
-    ````
-    $ oc get crds | grep 'migration.openshift.io' | awk '{print $1}' | xargs -I{} oc delete crd {}
-    ````  
+      ````sh
+      $ oc delete $(oc get crds -o name | grep 'migration.openshift.io')
+      ````  
     * Velero custom resource definition:
-    ````
-    $ oc get crds | grep velero | awk '{print $1}' | xargs -I{} oc delete crd {}
-    ````  
+      ````sh
+      $ oc delete $(oc get crds -o name | grep 'velero')
+      ````  
     * Migration cluster role:
-    ````
-    $ oc get clusterroles | grep 'migration.openshift.io' | awk '{print $1}' | xargs -I{} oc delete clusterrole {}
-    ````  
+      ````sh
+      $ oc delete $(oc get clusterroles -o name | grep 'migration.openshift.io')
+      ````  
     * Velero cluster role:
-    ````
-    $ oc get clusterroles | grep velero | awk '{print $1}' | xargs -I{} oc delete clusterrole {}
-    ````  
+      ````sh
+      $ oc delete $(oc get clusterroles -o name | grep 'velero')
+      ````  
     * Migration cluster role bindings:
-    ````
-    $ oc get clusterrolebindings | grep 'migration.openshift.io' | awk '{print $1}' | xargs -I{} oc delete clusterrolebindings {}
-    ````  
+      ````sh
+      $ oc delete $(oc get clusterrolebindings -o name | grep 'migration.openshift.io')
+      ````  
     * Velero cluster role bindings:
-    ````
-    $ oc get clusterrolebindings | grep velero | awk '{print $1}' | xargs -I{} oc delete clusterrolebindings {}
-    ```` 
+      ````sh
+      $ oc delete $(oc get clusterrolebindings -o name | grep 'velero')
+      ```` 
 
