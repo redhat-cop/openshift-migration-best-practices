@@ -1,29 +1,11 @@
-## [![Home](./images/home.png) | <](./README.md) Planning [> Cluster health checks](./cluster-health-checks.md)
+---
+title: Planning
+layout: default
+---
 
 # Planning
 
 This section focuses on considerations to review when you plan your migration.
-
-- **[Migration tools](#migration-tools)**
-  - [Migration Toolkit for Containers](#migration-toolkit-for-containers)
-    - [When to use MTC](#when-to-use-mtc)
-    - [MTC documentation](#mtc-documentation)
-  - [Upstream migration tools](#upstream-migration-tools)
-    - [Comparison of MTC and upstream tools](#comparison-of-mtc-and-upstream-tools)
-    - [Combining MTC and upstream tools](#combining-mtc-and-upstream-tools)
-- **[Migration environment considerations](#migration-environment-considerations)**
-- **[DNS considerations](#dns-considerations)**
-  - [Option 1: Isolate the target cluster DNS domain from the clients](#option-1-isolate-the-target-cluster-dns-domain-from-the-clients)
-  - [Option 2: Set up the target cluster to accept the source DNS domain](#option-2-set-up-the-target-cluster-to-accept-the-source-dns-domain)
-  - [Option 3: Deploy the target cluster in the source cluster domain](#option-3-deploy-the-target-cluster-in-the-source-cluster-domain)
-- **[Migration workflows](#migration-workflows)**
-  - [MTC workflow](#mtc-workflow)
-  - [CI/CD workflow](#cicd-workflow)
-- **[Network traffic migration strategies](#network-traffic-migration-strategies)**
-  - ["Big Bang" migration](#big-bang-migration)
-  - [Individual applications](#individual-applications)
-  - [Canary-style migration of individual applications](#canary-style-migration-of-individual-applications)
-  - [Audience-based migration of individual applications](#audience-based-migration-of-individual-applications)
 
 ## Migration tools
 

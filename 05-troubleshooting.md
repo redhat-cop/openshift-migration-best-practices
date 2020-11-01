@@ -1,16 +1,11 @@
-## [![Home](./images/home.png)](./README.md) | [Running the migration <](./running-the-migration.md) Troubleshooting [> Post-migration considerations](./post-migration-considerations.md)
+---
+title: Troubleshooting
+layout: default
+---
 
 # Troubleshooting
 
 This section describes common troubleshooting procedures.
-
-- **[MTC data model](#mtc-data-model)**
-- **[Debugging tips](#debugging-tips)**
-- **[Error messages](#error-messages)**
-- **[Using `must-gather`](#using-must-gather)**
-- **[Performance metrics](#performance-metrics)**
-- **[Cleaning up a failed migration](#cleaning-up-a-failed-migration)**
-- **[Deleting the MTC Operator and resources](#deleting-the-mtc-operator-and-resources)**
 
 Upstream doc for improving debug experience
 

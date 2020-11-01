@@ -1,27 +1,7 @@
-[![Home](./images/home.png)](./README.md) | [Pre-migration testing <](./pre-migration-testing.md) Running the migration [> Troubleshooting](./troubleshooting.md)
-
-<!-- TOC -->
-
-- [Running the migration](#running-the-migration)
-  - [Before creating a migration plan](#before-creating-a-migration-plan)
-    - [Migration environment](#migration-environment)
-    - [Increasing migration plan limits](#increasing-migration-plan-limits)
-    - [Resource quotas](#resource-quotas)
-    - [Internal images](#internal-images)
-    - [Route host names](#route-host-names)
-    - [Pod UIDs](#pod-uids)
-  - [Creating a migration plan](#creating-a-migration-plan)
-    - [Migrate an application with its dependencies](#migrate-an-application-with-its-dependencies)
-    - [Create one migration plan at a time](#create-one-migration-plan-at-a-time)
-    - [PV move](#pv-move)
-    - [PV copy](#pv-copy)
-    - [Deprecated APIs](#deprecated-apis)
-  - [Running migration plans](#running-migration-plans)
-    - [Run one migration plan at a time](#run-one-migration-plan-at-a-time)
-    - [Run stage migrations to reduce downtime](#run-stage-migrations-to-reduce-downtime)
-    - [Quiescing applications](#quiescing-applications)
-
-<!-- /TOC -->
+---
+title: Running the migration
+layout: default
+---
 
 # Running the migration
 
