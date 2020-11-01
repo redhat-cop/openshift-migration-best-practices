@@ -52,7 +52,6 @@ You can perform the following health checks on an OpenShift 3.9+ source cluster:
 * Check that the cluster certificates are not close to expiration and will be valid for the duration of the migration process. You can use the [`easy-mode` ansible playbook](https://docs.openshift.com/container-platform/3.11/install_config/redeploying_certificates.html#install-config-cert-expiry) to check the certificates.
 * Check for pending certificate signing requests:
   ```sh
-  $ oc get crs
   $ oc get csr
   ```
 
