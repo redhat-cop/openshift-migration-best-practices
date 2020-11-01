@@ -82,7 +82,7 @@ If an application uses an OpenShift route, the resource is migrated to the targe
 
 The `openshift.io/host.generated` annotation determines whether the host name is updated:
 * If `openshift.io/host.generated` is set, the [OpenShift Velero route plugin](https://github.com/konveyor/openshift-velero-plugin/blob/master/velero-plugins/route/restore.go) strips the source host name from the route and updates the route with the target cluster host name.
-* If `openshift.io/host.generated` is _not_ set, the route is migrated as is from the source cluster. The host name of the route is not updated.
+* If `openshift.io/host.generated` is _not_ set, the route is migrated as is from the source cluster. The host name of the route **is not** updated.
 
 ### Pod UIDs
 
