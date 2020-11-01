@@ -62,9 +62,9 @@ If you can redeploy your application from pipeline, that is the best option. If 
 
 #### MTC documentation
 
-* [Prerequisites](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-prerequisites_migrating-3-4)
-* [About MTC](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-understanding-cam_migrating-3-4)
-* [About data copy methods](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-understanding-data-copy-methods_migrating-3-4)
+* [Prerequisites](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-prerequisites_migrating-3-4)
+* [About MTC](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-understanding-cam_migrating-3-4)
+* [About data copy methods](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-understanding-data-copy-methods_migrating-3-4)
 
 ### Upstream migration tools
 
@@ -113,7 +113,7 @@ OpenShift 4 introduces architectural changes and enhancements. The procedures th
 
 You must consider the following:
 
-* [Important differences between OpenShift 3 and 4 and their impact on migration](https://docs.openshift.com/container-platform/4.5/migration/migrating_3_4/planning-migration-3-to-4.html)
+* [Important differences between OpenShift 3 and 4 and their impact on migration](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/planning-migration-3-to-4.html)
 * How stored data will be migrated for stateful applications
 * How much downtime your application can tolerate during migration
 * How traffic will be redirected during migration
