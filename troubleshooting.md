@@ -140,6 +140,8 @@ Run the `must-gather` command on your cluster:
 $ oc adm must-gather --image=openshift-migration-must-gather-rhel8:v1.3.0
 ````
 
+A directory will be created which will contain the data collected by the `must-gather` tool.
+
 ## Previewing metrics on local Prometheus server
 
 You can use `must-gather` to create a metrics data directory dump from the last day:
