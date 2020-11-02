@@ -13,9 +13,9 @@
 
 Install MTC on your source and target clusters:
 
-* Check the [migration prerequisites](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-prerequisites_migrating-3-4).
-* [Install MTC](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/deploying-cam-3-4.html) on the source and target clusters.
-* [Configure a replication repository](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/configuring-replication-repository-3-4.html).
+* Check the [migration prerequisites](https://docs.openshift.com/container-platform/latest/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-prerequisites_migrating-3-4).
+* [Install MTC](https://docs.openshift.com/container-platform/latest/migration/migrating_3_4/deploying-cam-3-4.html) on the source and target clusters.
+* [Configure a replication repository](https://docs.openshift.com/container-platform/latest/migration/migrating_3_4/configuring-replication-repository-3-4.html).
 
 The following diagram describes how MTC uses Velero and Restic to back up data from the source cluster to the replication repository and then restores data from the replication repository to the target cluster:
 
@@ -47,7 +47,7 @@ In the web console, check the 'OLM Managed' setting in the 'MigrationController'
 Migrate a simple application without a persistent volume (PV):
 
 1. Install a simple application without a PV on the source cluster.
-2. [Migrate the application](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/migrating-applications-with-cam-3-4.html) to the target cluster. You do not need to stage the migration.
+2. [Migrate the application](https://docs.openshift.com/container-platform/latest/migration/migrating_3_4/migrating-applications-with-cam-3-4.html) to the target cluster. You do not need to stage the migration.
 3. Validate the application on the target cluster.
 
 ## Migrating an application with a persistent volume

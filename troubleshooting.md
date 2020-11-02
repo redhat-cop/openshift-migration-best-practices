@@ -91,7 +91,7 @@ The migration debug tree can be viewed and traced by querying specific label sel
     $ oc describe backup 88435fe0-c9f8-11e9-85e6-5d593ce65e10 -n openshift-migration
     ```
 
-See [Viewing migration custom resources](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/troubleshooting-3-4.html#migration-viewing-migration-crs_migrating-3-4) for more information.
+See [Viewing migration custom resources](https://docs.openshift.com/container-platform/latest/migration/migrating_3_4/troubleshooting-3-4.html#migration-viewing-migration-crs_migrating-3-4) for more information.
 
 # Error messages
 
@@ -203,7 +203,7 @@ The following procedure removes the MTC Operator and cluster-scoped resources:
     Wait for the MTC Operator to finish deleting the resources.
 
 2. Uninstall the MTC Operator:
-    * OpenShift 4: Uninstall the Operator in the [web console](https://docs.openshift.com/container-platform/4.6/operators/olm-deleting-operators-from-cluster.html) or by running the following command: 
+    * OpenShift 4: Uninstall the Operator in the [web console](https://docs.openshift.com/container-platform/latest/operators/olm-deleting-operators-from-cluster.html) or by running the following command: 
     ````sh
     $ oc delete ns openshift-migration
     ````

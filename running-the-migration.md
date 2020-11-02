@@ -32,17 +32,17 @@ Prepare your migration environment by checking the following:
 
 * Network:
   * Ensure that your clusters have adequate network bandwidth, especially if you are copying PVs. 
-  * Ensure that [DNS records](https://docs.openshift.com/container-platform/4.6/installing/installing_bare_metal/installing-bare-metal.html#installation-infrastructure-user-infra_installing-bare-metal) for your application exist on the target cluster.
+  * Ensure that [DNS records](https://docs.openshift.com/container-platform/latest/installing/installing_bare_metal/installing-bare-metal.html#installation-infrastructure-user-infra_installing-bare-metal) for your application exist on the target cluster.
   * Certificates: Ensure that certificates used by your application exist on the target cluster.
-  * Ensure that the appropriate [firewall rules](https://docs.openshift.com/container-platform/4.6/installing/install_config/configuring-firewall.html) are configured on the target cluster.
+  * Ensure that the appropriate [firewall rules](https://docs.openshift.com/container-platform/latest/installing/install_config/configuring-firewall.html) are configured on the target cluster.
   * Ensure that load balancing is correctly configured on the target cluster.
 * Resources:
   * Check whether your application uses a service network or an external route to communicate with services.
   * If your application uses non-namespaced resources, you must re-create them on the target cluster.
   * You must migrate images from the internal image registry if you are not using an external image registry. If they cannot be migrated, you must re-create them manually on the target cluster.
-  * Increase the [CPU and memory limits of the Migration Controller](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/migrating-applications-with-cam-3-4.html#migration-changing-migration-plan-limits_migrating-3-4) for large migrations.
-  * Use the [`prune` command](https://docs.openshift.com/container-platform/4.6/applications/pruning-objects.html) to remove old builds, deployments, and images from each namespace being migrated.
-  * [Exclude PVs, imagestreams, and other resources](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/migrating-applications-with-cam-3-4.html#migration-excluding-resources_migrating-3-4) if you do not want to migrate them with MTC.
+  * Increase the [CPU and memory limits of the Migration Controller](https://docs.openshift.com/container-platform/latest/migration/migrating_3_4/migrating-applications-with-cam-3-4.html#migration-changing-migration-plan-limits_migrating-3-4) for large migrations.
+  * Use the [`prune` command](https://docs.openshift.com/container-platform/latest/applications/pruning-objects.html) to remove old builds, deployments, and images from each namespace being migrated.
+  * [Exclude PVs, imagestreams, and other resources](https://docs.openshift.com/container-platform/latest/migration/migrating_3_4/migrating-applications-with-cam-3-4.html#migration-excluding-resources_migrating-3-4) if you do not want to migrate them with MTC.
 * Namespaces:
   * Check the namespaces on the target cluster to ensure that they do not duplicate namespaces being migrated.
   * Do not create namespaces for your application on the target cluster before migration because this can cause quotas to change.
@@ -53,7 +53,7 @@ Prepare your migration environment by checking the following:
 
 ### Increasing migration plan limits
 
-You can [increase the limits](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/migrating-applications-with-cam-3-4.html#migration-changing-migration-plan-limits_migrating-3-4) for a single migration plan, but such changes must be *approached with caution and thoroughly tested*.
+You can [increase the limits](https://docs.openshift.com/container-platform/latest/migration/migrating_3_4/migrating-applications-with-cam-3-4.html#migration-changing-migration-plan-limits_migrating-3-4) for a single migration plan, but such changes must be *approached with caution and thoroughly tested*.
 
 MTC has the following migration plan defaults to encourage smaller migrations:
 * 100 PVs
@@ -65,7 +65,7 @@ These limits should only be increased if a large plan is required for migrating 
 ### Resource quotas
 
 If you are using resource quotas, the following considerations might apply:
-* Source cluster: If you are migrating PVs, you might have to [increase the Pod limit](https://docs.openshift.com/container-platform/4.6/applications/quotas/quotas-setting-per-project.html#quotas-creating-a-quota_quotas-setting-per-project) on the source cluster. The migration process creates a temporary 'stage' Pod on the source cluster when a PV is copied. See [MIG-217 - Catch error conditions of not enough quota when attempting to do a stage/migrate](https://issues.redhat.com/browse/MIG-217).
+* Source cluster: If you are migrating PVs, you might have to [increase the Pod limit](https://docs.openshift.com/container-platform/latest/applications/quotas/quotas-setting-per-project.html#quotas-creating-a-quota_quotas-setting-per-project) on the source cluster. The migration process creates a temporary 'stage' Pod on the source cluster when a PV is copied. See [MIG-217 - Catch error conditions of not enough quota when attempting to do a stage/migrate](https://issues.redhat.com/browse/MIG-217).
 * Target cluster: The resource quotas on the target cluster must be sufficient for the namespace that you are migrating. See [MIG-203 - Handle ResourceQuotas when changing storage classes, allow for possibility of keys changing](https://issues.redhat.com/browse/MIG-203).
 
 ### Internal images
@@ -74,7 +74,7 @@ If your application uses images from the `openshift` namespace, you must ensure 
 
 If the required images are not present, you must update the `imagestreamtags` references to use an available version that is compatible with your application.
 
-If the `imagestreamtags` cannot be updated, you can manually upload equivalent images to the application namespace and update the application to reference them. [Certain `imagestreamtags`](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-prerequisites_migrating-3-4) have been removed from OpenShift 4.
+If the `imagestreamtags` cannot be updated, you can manually upload equivalent images to the application namespace and update the application to reference them. [Certain `imagestreamtags`](https://docs.openshift.com/container-platform/latest/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-prerequisites_migrating-3-4) have been removed from OpenShift 4.
 
 ### Route host names
 
@@ -140,7 +140,7 @@ The following table compares the *snapshot* and *file system* copy options.
 
 In OpenShift 4.x, some API GroupVersionKinds (GVKs) that are used by OpenShift 3.x are [deprecated](https://kubernetes.io/blog/2019/07/18/api-deprecations-in-1-16/). If your source cluster contains deprecated APIs, the following error is displayed in the MTC console when you create a migration plan: `Some namespaces contain GVKs incompatible with destination cluster`. You can run the migration plan but the affected resources will not be migrated.
 
-You can [migrate the excluded resources manually](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/troubleshooting-3-4.html#migration-gvk-incompatibility_migrating-3-4) after the migration.
+You can [migrate the excluded resources manually](https://docs.openshift.com/container-platform/latest/migration/migrating_3_4/troubleshooting-3-4.html#migration-gvk-incompatibility_migrating-3-4) after the migration.
 
 ## Running migration plans
 
