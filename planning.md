@@ -120,6 +120,54 @@ You must consider the following:
 
 ## Migration workflows
 
+## Migration DNS considerations
+
+In a typical migration scenario, the OpenShift 4 target cluster will in most cases be deployed in a different DNS domain from that of the OpenShift 3 source cluster, this implies that the applications migrated from the source to the target cluster will be accessible on a new URL different from the original one.  
+
+Let’s assume for the rest of this section that the source cluster uses the base domain __ocp3.example.com__, and its applications default domain is __*.apps.ocp3.example.com__.  Unless special provisions are taken, the target cluster needs to be deployed on a different domain to avoid conflicts, for example __ocp4.example.com__, with the default applications defined as __*.apps.ocp4.example.com__.  
+
+An application which uses the URL __http://app1.apps.ocp3.example.com__ in the source cluster, once migrate, will end up using the URL __http://app1.apps.ocp4.example.com__.  In most cases this is not a desirable result and would require the application clients to find out the new URL and adapt to it, which may not be a trivial or convenient thing to do.
+
+If keeping the migrated applications in its original DNS domain is a requisite of the migration plan some options are available, three of them are described here.
+
+First thing to consider is that once the OpenShift 4 cluster has been installed, its default DNS domain cannot be changed, this has some implications like:
+
+* Creating a route without specifying the hostname parameter will use the default DNS domain for the target cluster (__*.apps.ocp4.example.com__). This can cause confusion when deploying a new application, especially after applying any of the options described next to have the migrated applications in the original source DNS domain.
+
+* Internal services provided by the cluster like the web console, open authentication, alermanager and metrics UI, etc. will use the default DNS domain in their URLs, and with the exception of the web console these URLs cannot be easily changed. 
+
+### Option 1: Isolate the target cluster DNS domain from the clients
+
+To hide the OpenShift 4 DNS domain from the clients, a network element like an application load balancer or a reverse proxy is placed between the clients and the OpenShift 4 cluster. 
+
+The Applications will be migrated from source to  target cluster and will get a FQDN in the target cluster’s default DNS domain (app1.apps.ocp4.example.com) 
+The original application FQDN (app1.apps.ocp3.example.com) will be updated in the DNS server to return the IP of the network device.
+The network device will contain rules to send the requests received for the application in the source domain to the load balancer in the target cluster using the target’s domain.
+
+```
+app1.apps.ocp3.example.com ---|reverse proxy|--->  app1.apps.ocp4.example.com
+```
+
+The Applications can be migrated using any of the network strategies described later, in particular it is possible to migrate one application at a time, having a wildcard DNS record for the *.apps.ocp3.example.com. domain pointing to the IP of the source cluster’s load balancer while having specific DNS records for each of the migrated applications pointing to the IP of the network device in front of the target cluster.  The specific DNS records have a higher priority over the wildcard one in a DNS server therefore there is no conflict when resolving the applications FQDNs.
+
+Some additional considerations for this option are:
+
+* The network device must terminate all secure TLS connections, otherwise if the connections are passed through to the Openshift load balancer, the target application’s FQDN will be exposed to the client and certificate errors will happen.
+
+* The applications must support this configuration and not return any links referring the target cluster domain to the clients.  If such links are leaked back to the client inside the returned content, parts of the application may not load or work properly.
+
+### Option 2: Set up the target cluster to accept the source DNS domain
+
+It is possible to set up the target cluster to accept requests for the migrated applications in the same DNS domain that was defined in the source cluster. 
+
+Two cases will be considered:
+
+* Non secure (HTTP) access
+
+  In the case of applications not requiring a secure TLS connection, two steps need to be taken:
+
+
+
 ### MTC workflow
 
 MTC migrates applications from OCP 3 to OCP 4 in production and non-production environments.
