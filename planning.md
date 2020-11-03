@@ -166,6 +166,20 @@ Two cases will be considered:
 
   In the case of applications not requiring a secure TLS connection, two steps need to be taken:
 
+  * In order to have the router in the default ingress controller of the target cluster accept requests for applications in the source DNS domain (app1.apps.ocp3.example.com), a route must be created in the application’s project for the hostname used in the source cluster:
+
+```
+$ oc expose svc app1-svc  --hostname app1.apps.ocp3.example.com \
+   -n app1-namespace
+```
+    With this new route in place, any request for that FQDN will be accepted and sent to the corresponding application pods.
+
+    When the application is migrated a route is created in the target cluster domain (app1.apps.ocp4.example.com).  The migrated application can be accessed using both of these hostnames.
+
+  * An specific DNS entry for the FQDN defined  in the route hostname parameter must be created resolving to the IP of the target cluster default load balancer. As explained above, the specific DNS entries have priority over the wildcard one.
+
+  With the above two steps, the FQDN of the application will resolve to the load balancer of the target cluster, and the requests for that FQDN will be accepted by the default ingress controller router because there is a route for that hostname exposed in it.
+
 
 
 ### MTC workflow
