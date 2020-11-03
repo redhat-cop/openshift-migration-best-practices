@@ -172,6 +172,7 @@ Two cases will be considered:
 $ oc expose svc app1-svc  --hostname app1.apps.ocp3.example.com \
    -n app1-namespace
 ```
+
     With this new route in place, any request for that FQDN will be accepted and sent to the corresponding application pods.
 
     When the application is migrated a route is created in the target cluster domain (app1.apps.ocp4.example.com).  The migrated application can be accessed using both of these hostnames.
