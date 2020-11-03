@@ -177,9 +177,24 @@ Two cases will be considered:
 
   * An specific DNS entry for the FQDN defined  in the route hostname parameter must be created resolving to the IP of the target cluster default load balancer. As explained above, the specific DNS entries have priority over the wildcard one.
 
-  With the above two steps, the FQDN of the application will resolve to the load balancer of the target cluster, and the requests for that FQDN will be accepted by the default ingress controller router because there is a route for that hostname exposed in it.
+With the above two steps, the FQDN of the application will resolve to the load balancer of the target cluster, and the requests for that FQDN will be accepted by the default ingress controller router because there is a route for that hostname exposed in it.
 
+* Secure TLS access
 
+  If the application requires a TLS/HTTPS connection, besides the two steps described before (creating a route and a specific DNS entry), an additional step is needed:
+
+  * [Replace the default ingress controller’s x509 certificate](https://docs.openshift.com/container-platform/4.6/security/certificates/replacing-default-ingress-certificate.html) created during the installation process by a new custom one that includes the wildcard DNS domains for both the source and target clusters in the Subject Alternative Name (SAN) field.  The new certificate will be valid for securing any connections made using either of the two DNS domains.
+
+    After the certificate has been replaced, the cluster administrator will be responsible to update the certificate when it is close to expire.
+
+### Option 3: Deploy the target cluster in the source cluster domain.
+
+Depending on the source Openshift 3 cluster configuration and the base DNS domain it uses, it could be possible to deploy the target OpenShift 4 cluster in the same DNS domain as the source cluster, using a combination of specific and wildcard DNS entries, and public and private DNS zones to avoid conflicts between both clusters.  
+
+This option requires careful planning and execution, but if it is considered a viable option it will produce the best final results because, after the migration of the applications has been completed following any of the strategies described later, no further maintenance of custom certificates, DNS entries or external network devices is required.
+This option requires careful planning and execution, but if it is considered a viable option it will produce the best final results, after the migration of the applications has been completed following any of the strategies described later, no further maintenance of custom certificates, DNS entries or external network devices is required.
+
+Providing further details about this option is out of the scope of this document, please get in contact with Red Hat support for more information.
 
 ### MTC workflow
 
