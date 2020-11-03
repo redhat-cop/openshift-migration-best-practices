@@ -13,9 +13,9 @@ This section focuses on considerations to review when you plan your migration.
     - [Combining MTC and upstream tools](#combining-mtc-and-upstream-tools)
 * **[Migration environment considerations](#migration-environment-considerations)**
 * **[Migration DNS considerations](#migration-dns-considerations)**
-    - [Option 1: Isolate the target cluster DNS domain from the clients](option-1:-isolate-the-target-cluster-dns-domain-from-the-clients)
-    - [Option 2: Set up the target cluster to accept the source DNS domain](option-2:-set-up-the-target-cluster-to-accept-the-source-dns-domain)
-    - [Option 3: Deploy the target cluster in the source cluster domain](option-3:-deploy-the-target-cluster-in-the-source-cluster-domain)
+    - [Option 1: Isolate the target cluster DNS domain from the clients](#option-1:-isolate-the-target-cluster-dns-domain-from-the-clients)
+    - [Option 2: Set up the target cluster to accept the source DNS domain](#option-2:-set-up-the-target-cluster-to-accept-the-source-dns-domain)
+    - [Option 3: Deploy the target cluster in the source cluster domain](#option-3:-deploy-the-target-cluster-in-the-source-cluster-domain)
 * **[Migration workflows](#migration-workflows)**
   - [MTC workflow](#mtc-workflow)
   - [CI/CD workflow](#cicd-workflow)
