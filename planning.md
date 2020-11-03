@@ -168,10 +168,10 @@ Two cases will be considered:
 
   * In order to have the router in the default ingress controller of the target cluster accept requests for applications in the source DNS domain (app1.apps.ocp3.example.com), a route must be created in the application’s project for the hostname used in the source cluster:
 
-```
-$ oc expose svc app1-svc  --hostname app1.apps.ocp3.example.com \
-   -n app1-namespace
-```
+   ```
+   $ oc expose svc app1-svc  --hostname app1.apps.ocp3.example.com \
+     -n app1-namespace
+   ```
 
     With this new route in place, any request for that FQDN will be accepted and sent to the corresponding application pods.
 
