@@ -1,4 +1,4 @@
-[![Home](./images/home.png)](./README.md) | [Running the migration <](./running-the-migration.md) Troubleshooting
+[![Home](./images/home.png)](./README.md) | [Running the migration <](./running-the-migration.md) Troubleshooting [> Postmigration considerations](./postmigration-considerations.md)
 ---
 # Troubleshooting
 
