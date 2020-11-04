@@ -7,3 +7,4 @@ This guide provides recommendations and best practices for migrating from OpenSh
 3. **[Premigration testing](./premigration-testing.md)**: Testing the migration plan before running the actual migration
 4. **[Running the migration](./running-the-migration.md)**: Best practices for running the migration
 5. **[Troubleshooting](./troubleshooting.md)**: Common troubleshooting tasks
+6. **[Postmigration considerations](./postmigration-considerations.md)**: Considerations after you successfully migrated to OpenShift 4
