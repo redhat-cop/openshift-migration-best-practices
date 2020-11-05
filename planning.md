@@ -4,10 +4,11 @@
 
 This section focuses on considerations to review when you plan your migration.
 
+* **[Migration prerequisites](#migration-prerequisites)**
 * **[Migration tools](#migration-tools)**
   * [Migration Toolkit for Containers](#migration-toolkit-for-containers)
     - [When to use MTC](#when-to-use-mtc)
-    - [MTC documentation](#mtc-documentation)
+    - [Other documentation](#other-documentation)
   * [Upstream migration tools](#upstream-migration-tools)
     - [Comparison of MTC and upstream tools](#comparison-of-mtc-and-upstream-tools)
     - [Combining MTC and upstream tools](#combining-mtc-and-upstream-tools)
@@ -24,6 +25,26 @@ This section focuses on considerations to review when you plan your migration.
   - [Individual applications](#individual-applications)
   - [Canary-style migration of individual applications](#canary-style-migration-of-individual-applications)
   - [Audience-based migration of individual applications](#audience-based-migration-of-individual-applications)
+
+## Migration prerequisites
+
+  * You must have `podman` installed.
+
+  * The source cluster must be OpenShift Container Platform 3.7, 3.9, 3.10, or 3.11.
+
+  * You must upgrade the source cluster to the latest z-stream release.
+
+  * You must have `cluster-admin` privileges on all clusters.
+
+  * The source and target clusters must have unrestricted network access to the replication repository.
+
+  * The cluster on which the Migration controller is installed must have unrestricted access to the other clusters.
+
+  * If your application uses images from the `openshift` namespace, the required versions of the images must be present on the target cluster.
+
+  * If the required images are not present, you must update the `imagestreamtags` references to use an available version that is compatible with your application. If the `imagestreamtags` cannot be updated, you can manually upload equivalent images to the application namespaces and update the applications to reference them.
+
+For more information about prerequisites please check the official doc [here](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-prerequisites_migrating-3-4).
 
 ## Migration tools
 
@@ -64,9 +85,8 @@ However, this might not be possible in the real world. A running application on 
 
 If you can redeploy your application from pipeline, that is the best option. If not, you should use MTC.
 
-#### MTC documentation
+#### Other documentation
 
-* [Prerequisites](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-prerequisites_migrating-3-4)
 * [About MTC](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-understanding-cam_migrating-3-4)
 * [About data copy methods](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-understanding-data-copy-methods_migrating-3-4)
 
@@ -117,10 +137,10 @@ OpenShift 4 introduces architectural changes and enhancements. The procedures th
 
 You must consider the following:
 
-* [Important differences between OpenShift 3 and 4 and their impact on migration](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/planning-migration-3-to-4.html)
-* How stored data will be migrated for stateful applications
-* How much downtime your application can tolerate during migration
-* How traffic will be redirected during migration
+* Important differences between OpenShift 3 and 4 and their impact on migration ([Architecture differences](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/planning-migration-3-to-4.html#migration-differences-architecture), [Installation and update differences](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/planning-migration-3-to-4.html#migration-differences-install))
+* How stored data will be migrated for stateful applications ([Storage considerations](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/planning-migration-3-to-4.html#migration-preparing-storage))
+* How much downtime your application can tolerate during migration ([Networking considerations](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/planning-migration-3-to-4.html#migration-preparing-networking))
+* How traffic will be redirected during migration ([Logging considerations](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/planning-migration-3-to-4.html#migration-preparing-logging), [Security considerations](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/planning-migration-3-to-4.html#migration-preparing-security), [Monitoring considerations](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/planning-migration-3-to-4.html#migration-preparing-monitoring), [DNS considerations](#migration-dns-considerations))
 
 ## Migration DNS considerations
 
