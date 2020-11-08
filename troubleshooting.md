@@ -37,7 +37,7 @@ You can view the resources of a migration plan in the MTC web console:
     The migration plan resources are displayed as a tree.
 
 2. Click the arrow of a **Backup** or **Restore** object to view its pods.
-   
+
 3. Click the Copy button of a pod to copy the `oc get` command to your clipboard.
 
     You can paste the command to the CLI to view the resource details.
@@ -55,7 +55,7 @@ migration failed. The [MTC debug flowchart](https://app.lucidchart.com/documents
 
 Stage migrations have one Backup and one Restore object.
 
-Final migrations have two Backup and two Restore objects. The first Backup object captures the original, unaltered state of the application and its Kubernetes objects. This Backup is the source of truth. Then, the application is quiesced and a second Backup captures the storage-related resources (PVs, PVCs, data). 
+Final migrations have two Backup and two Restore objects. The first Backup object captures the original, unaltered state of the application and its Kubernetes objects. This Backup is the source of truth. Then, the application is quiesced and a second Backup captures the storage-related resources (PVs, PVCs, data).
 
 The first Restore restores these storage objects on the target cluster. The final Restore restores the original application Backup to the target cluster.
 
@@ -64,10 +64,13 @@ The first Restore restores these storage objects on the target cluster. The fina
 The migration debug tree can be viewed and traced by querying specific label selectors.
 
 - To view all `migmigration` objects associated with the `test` plan:
+
     ```sh
     $ oc get migmigration -l 'migration.openshift.io/migplan-name=test'
     ```
-    Output:
+
+    **Example output**
+
     ```
     NAME                                  READY  PLAN  STAGE  ITINERARY  PHASE
     09a8bf20-fdc5-11ea-a447-cb5249018d21         test  false  Final      Completed
@@ -76,10 +79,13 @@ The migration debug tree can be viewed and traced by querying specific label sel
     The columns display the associated plan name, itinerary step, and phase.
 
 - To view `backup` objects:
+
     ```sh
     $ oc get backup -n openshift-migration
     ```
-    Output:
+
+    **Example output**
+
     ```
     NAME                                   AGE
     88435fe0-c9f8-11e9-85e6-5d593ce65e10   6m42s
@@ -87,6 +93,7 @@ The migration debug tree can be viewed and traced by querying specific label sel
     Use the same command to view `restore` objects.
 
 - To inspect a `backup` object:
+
     ```sh
     $ oc describe backup 88435fe0-c9f8-11e9-85e6-5d593ce65e10 -n openshift-migration
     ```
@@ -118,17 +125,17 @@ Self-signed CA certificates:
 Network access:
 * You can inspect the elements of the MTC console with your browser's web inspector to view the network connections.
 * MTC 1.3.1 and earlier: The MTC console performs OAuth authentication on the client side.
-      
+
     The console requires uninterrupted network access to the API server and the OAuth server.
 
 * MTC 1.3.2 and later: OAuth authentication is performed on the backend.
-      
+
     The console requires uninterrupted network access to the Node.js server, which provides the JavaScript bundle and performs OAuth authentication, and the API server. See [BZ#1878824](https://bugzilla.redhat.com/show_bug.cgi?id=1878824).
 
 ## `Connection has timed out` message after accepting CA certificate
 
 If you have accepted a self-signed certificate and a blank page appears, followed by a `Connection has timed out` message, the likely cause is a web proxy blocking access to the OAuth server.
-    
+
 Configure the web proxy configuration to allow access to the `oauth-authorization-server` URL. See [BZ#1890675](https://bugzilla.redhat.com/show_bug.cgi?id=1890675).
 
 # Using `must-gather`
@@ -136,18 +143,19 @@ Configure the web proxy configuration to allow access to the `oauth-authorizatio
 You can use the `must-gather` tool to collect information for troubleshooting or for opening a customer support case on the [Red Hat Customer Portal](https://access.redhat.com/). The `openshift-migration-must-gather-rhel8` image collects migration-specific logs and Custom Resource data that are not collected by the default `must-gather` image.
 
 Run the `must-gather` command on your cluster:
-````sh
+
+```sh
 $ oc adm must-gather --image=openshift-migration-must-gather-rhel8:v1.3.0
-````
+```
 
 The `must-gather` tool generates a local directory that contains the collectged data.
 
 ## Previewing metrics on local Prometheus server
 
 You can use `must-gather` to create a metrics data directory dump from the last day:
-````sh
+```sh
 $ oc adm must-gather --image quay.io/konveyor/must-gather:latest -- /usr/bin/gather_metrics_dump
-````
+```
 
 You can view the data with a [local Prometheus instance](https://github.com/konveyor/must-gather#preview-metrics-on-local-prometheus-server).
 
@@ -167,7 +175,7 @@ Ensure that stage pods are cleaned up. If a migration fails during stage or copy
 
 If your application was quiesced during migration, you should unquiesce it by scaling it back to its initial replica count.
 
-This can be done manually by editing the deployment primitive (Deployment, DeploymentConfig, etc.) and setting the `spec.replicas` field back to its original, non-zero value:
+This can be done manually by editing the deployment primitive (`Deployment`, `DeploymentConfig`, etc.) and setting the `spec.replicas` field back to its original, non-zero value:
 
 ```sh
 $ oc edit deployment <deployment_name>
@@ -197,45 +205,44 @@ metadata:
 The following procedure removes the MTC Operator and cluster-scoped resources:
 
 1. Delete the Migration Controller and its resources:
-    ````sh
+    ```sh
     $ oc delete migrationcontroller <resource_name>
-    ````
+    ```
     Wait for the MTC Operator to finish deleting the resources.
 
 2. Uninstall the MTC Operator:
-    * OpenShift 4: Uninstall the Operator in the [web console](https://docs.openshift.com/container-platform/4.6/operators/olm-deleting-operators-from-cluster.html) or by running the following command: 
-    ````sh
+    * OpenShift 4: Uninstall the Operator in the [web console](https://docs.openshift.com/container-platform/4.6/operators/olm-deleting-operators-from-cluster.html) or by running the following command:
+    ```sh
     $ oc delete ns openshift-migration
-    ````
+    ```
 
     * OpenShift 3: Uninstall the operator by deleting it:
-      ````sh
+      ```sh
       $ oc delete -f operator.yml
-      ````
+      ```
 
 4. Delete the cluster-scoped resources:
     * Migration custom resource definition:
-      ````sh
+      ```sh
       $ oc delete $(oc get crds -o name | grep 'migration.openshift.io')
-      ````  
+      ```  
     * Velero custom resource definition:
-      ````sh
+      ```sh
       $ oc delete $(oc get crds -o name | grep 'velero')
-      ````  
+      ```  
     * Migration cluster role:
-      ````sh
+      ```sh
       $ oc delete $(oc get clusterroles -o name | grep 'migration.openshift.io')
-      ````  
+      ```  
     * Velero cluster role:
-      ````sh
+      ```sh
       $ oc delete $(oc get clusterroles -o name | grep 'velero')
-      ````  
+      ```  
     * Migration cluster role bindings:
-      ````sh
+      ```sh
       $ oc delete $(oc get clusterrolebindings -o name | grep 'migration.openshift.io')
-      ````  
+      ```  
     * Velero cluster role bindings:
-      ````sh
+      ```sh
       $ oc delete $(oc get clusterrolebindings -o name | grep 'velero')
-      ```` 
-
+      ```

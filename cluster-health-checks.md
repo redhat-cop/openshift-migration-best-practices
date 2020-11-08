@@ -58,14 +58,14 @@ You can perform the following health checks on an OpenShift 3.9+ source cluster:
 * Check that [time synchronization](https://docs.openshift.com/container-platform/3.11/day_two_guide/run_once_tasks.html#day-two-guide-ntp-synchronization) is consistent across the whole cluster.
 * Check that the internal container image registry is healthy, images can be read from and written to it.
 * Check that the internal container image registry uses a [supported storage type](https://docs.openshift.com/container-platform/3.11/scaling_performance/optimizing_storage.html#registry).
-* Check that applications are not using [deprecated Kubernetes API references](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/troubleshooting-3-4.html#migration-gvk-incompatibility_migrating-3-4). MTC will warn you about any resources using deprecated Kubernetes API references. 
+* Check that applications are not using [deprecated Kubernetes API references](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/troubleshooting-3-4.html#migration-gvk-incompatibility_migrating-3-4). MTC will warn you about any resources using deprecated Kubernetes API references.
 * Check that all nodes in the cluster have [high entropy value](https://docs.openshift.com/container-platform/3.11/day_two_guide/run_once_tasks.html#day-two-guide-entropy).
 
 ### Target cluster
 
 You can perform the following health checks on an OpenShift 4.x target cluster:
 
-* Check that the cluster has access to external services required by the applications by verifying network connectivity and proper permissions. 
+* Check that the cluster has access to external services required by the applications by verifying network connectivity and proper permissions.
 
   Examples of external services include databases, source code repositories, container image registries, and CI/CD tools.
 
@@ -79,14 +79,14 @@ You can perform the following health checks on an OpenShift 4.x target cluster:
 * The clusters require additional memory, CPUs, and storage in order to run a migration on top of normal workloads. Actual resource requirements depend on the number of Kubernetes resources being migrated in a single migration plan.
 * Check that the OpenShift 3.9+ source cluster meets the [minimum hardware requirements](https://docs.openshift.com/container-platform/3.11/install/prerequisites.html#hardware) for an OpenShift installation.
 * Check that the OpenShift 4.x target cluster meets the minimum hardware requirements for the specific platform and installation method. For example, a bare metal installation has [specific minimum resource requirements](https://docs.openshift.com/container-platform/4.6/installing/installing_bare_metal/installing-bare-metal.html#minimum-resource-requirements_installing-bare-metal).
-* Verify that the OpenShift 4.x target cluster contains storage classes for the same types (block, file, object) as the OpenShift 3.9+ source cluster.  In particular verify that the default storage class is of the same type in both clusters.
+* Verify that the OpenShift 4.x target cluster contains storage classes for the same types (block, file, object) as the OpenShift 3.9+ source cluster. In particular verify that the default storage class is of the same type in both clusters.
 * Check the available bandwidth between the source and target clusters. Less than 10 Gbps is not recommended.
 * If you are migrating more than 20 TB, check that the target cluster and the replication repository have sufficient storage.
 
 ## Performance
 
 * Check cluster compute and memory utilization: `$ oc adm top node`.
-* Check the average response time of API calls in the source cluster. Less than 50 ms is recommended.  
+* Check the average response time of API calls in the source cluster. Less than 50 ms. is recommended.
 * Check `etcd` disk performance on the source and target clusters with [`fio`](https://access.redhat.com/solutions/4885641).
 
 ## Additional checks
