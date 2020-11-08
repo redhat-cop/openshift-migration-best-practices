@@ -193,7 +193,7 @@ Depending on configuration and base DNS domain of the source Openshift 3 cluster
 
 This option requires careful planning and execution. If it is a viable option, it produces the best results. After migrating the applications, no maintenance of custom certificates, DNS entries, or external network devices is required.
 
-Providing further details about this option is out of the scope of this document. Contact Red Hat support for more information.
+Details about this option are beyond the scope of this document. Contact Red Hat Support for more information.
 
 ## Migration workflows
 
