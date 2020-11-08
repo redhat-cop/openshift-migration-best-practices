@@ -185,7 +185,7 @@ You can set up the target cluster to accept requests for migrated applications i
 
   * Replace the [x509 certificate of the default ingress controller](https://docs.openshift.com/container-platform/4.6/security/certificates/replacing-default-ingress-certificate.html) created during the installation process with a custom certificate that includes the wildcard DNS domains for both the source and target clusters in the Subject Alternative Name (SAN) field. The new certificate will be valid for securing connections made using either of the two DNS domains.
 
-    The certificate must be updated when it approaches its expiration date.
+  The certificate must be updated when it approaches its expiration date.
 
 ### Option 3: Deploy the target cluster in the source cluster domain
 
