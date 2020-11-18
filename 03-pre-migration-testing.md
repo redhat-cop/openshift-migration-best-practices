@@ -1,9 +1,9 @@
 ---
-title: Pre-migration testing
+title: Premigration testing
 layout: default
 ---
 
-# Pre-migration testing
+# Premigration testing
 
 ## Installing MTC
 
