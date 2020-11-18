@@ -1,18 +1,23 @@
 [![Home](./images/home.png)](./README.md) | [Troubleshooting <](./troubleshooting.md) Postmigration considerations
----
-# Postmigration considerations
+
+<!-- TOC -->
+
+- [Post-migration considerations](#post-migration-considerations)
+  - [Operators](#operators)
+    - [When you might want to move to operators](#when-you-might-want-to-move-to-operators)
+    - [Accessing the OperatorHub marketplace](#accessing-the-operatorhub-marketplace)
+    - [Creating your own operators](#creating-your-own-operators)
+    - [Additional operator resources](#additional-operator-resources)
+
+<!-- /TOC -->
+
+# Post-migration considerations
 
 Now that the migration is completed, there are some considerations to keep in mind once you migrated to OpenShift 4.
 
-* **[Operators](#operators)**
-  * [When you might want to move to operators](#when-you-might-want-to-move-to-operators)
-  * [Accessing the OperatorHub marketplace](#accessing-the-operatorhub-marketplace)
-  * [Creating your own operators](#creating-your-own-operators)
-  * [Additional operator resources](#additional-operator-resources)
-
 ## Operators
 
-In OpenShift 4, Operators are an important feature.
+As you might know in OpenShift 4, Operators are a really important piece of the platform.
 
 An Operator is a method of packaging, deploying, and managing a Kubernetes-native application. A Kubernetes-native application is an application that is both deployed on Kubernetes and managed using the Kubernetes APIs and kubectl tooling.
 
@@ -25,12 +30,13 @@ Operators provide:
 
 In OpenShift 4 we have an operator marketplace with different categories depending on their supportability level:
 
-|Category|Description|
-|--------|-----------|
-|Red Hat Operators |Red Hat products packaged, shipped, and supported by Red Hat. |
-|Certified Operators |Products from leading independent software vendors (ISVs). Red Hat partners with ISVs to package and ship them but they are supported by the ISV.|
-|Community Operators |Software maintained by relevant representatives in the [operator-framework/community-operators](https://github.com/operator-framework/community-operators) GitHub repository. No official support.|
-|Custom Operators |Operators that you add to the cluster yourself. If you have not added any Custom Operators, the Custom category does not appear in the web console on your OperatorHub.|
+| Category            | Description                                                                                                                                                                                                           |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Red Hat Operators   | Red Hat products packaged and shipped by Red Hat. Supported by Red Hat.                                                                                                                                               |
+| Certified Operators | Products from leading independent software vendors (ISVs). Red Hat partners with ISVs to package and ship. Supported by the ISV.                                                                                      |
+| Community Operators | Optionally-visible software maintained by relevant representatives in the [operator-framework/community-operators](https://github.com/operator-framework/community-operators) GitHub repository. No official support. |
+| Custom Operators    | Operators you add to the cluster yourself. If you have not added any Custom Operators, the Custom category does not appear in the Web console on your OperatorHub.                                                    |
+|                     |                                                                                                                                                                                                                       |
 
 The level of sophistication of the management logic encapsulated within an Operator can vary. In general, this logic depends on the type of the service represented by the Operator.
 
@@ -40,7 +46,7 @@ One can however generalize the scale of the maturity of an Operator’s encapsul
 
 ### When you might want to move to operators
 
-If you were using the Service Broker or some OpenShift templates in OpenShift 3.11 to run a specific service such as MongoDB or PostgreSQL, you might want to move to the specific operators for such technologies.
+If you were using the Service Broker or some OpenShift Templates in OpenShift 3.11 in order to run a specific service such as MongoDB, PostgreSQL, etc. You might want to move to the specific operators for such technologies.
 
 For example, if your application uses a MongoDB database, you can use the MongoDB Operator to deploy and manage the MongoDB instance. The operator will take care of the MongoDB instance lifecycle, enabling you to focus on your application.
 
@@ -72,7 +78,7 @@ You can learn more about how to create your own operators in the [Building Opera
 
 You can continue learning about operators in the following resources:
 
-- [OpenShift 4: What are Operators?](https://docs.openshift.com/container-platform/4.6/operators/understanding/olm-what-operators-are.html)
-- [OpenShift 4: Getting started with the Operator SDK](https://docs.openshift.com/container-platform/4.6/operators/operator_sdk/osdk-getting-started.html)
-- [Operators on Red Hat OpenShift](https://www.openshift.com/learn/topics/operators)
-- [Operator SDK](https://sdk.operatorframework.io/)
+- [OpenShift 4 Operators Documentation](https://docs.openshift.com/container-platform/4.6/operators/understanding/olm-what-operators-are.html)
+- [OpenShift 4 Getting started with the Operator SDK](https://docs.openshift.com/container-platform/4.6/operators/operator_sdk/osdk-getting-started.html)
+- [OpenShift Learn Operators](https://www.openshift.com/learn/topics/operators)
+- [Operator SDK Documentation](https://sdk.operatorframework.io/)
