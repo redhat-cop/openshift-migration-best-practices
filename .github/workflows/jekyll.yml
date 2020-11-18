@@ -3,7 +3,7 @@ name: Deploy via Jekyll on GitHub  pages
 on:
   push:
     branches:
-      - master
+      - main
   schedule:
     - cron:  '0 0 * * *'
 
