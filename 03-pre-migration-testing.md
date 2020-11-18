@@ -1,16 +1,7 @@
-[![Home](./images/home.png)](./README.md) | [Cluster health checks <](./cluster-health-checks.md) Pre-migration testing [> Running the migration](./running-the-migration.md)
-
-<!-- TOC -->
-
-- [Pre-migration testing](#pre-migration-testing)
-  - [Installing MTC](#installing-mtc)
-  - [Ensuring same MTC versions](#ensuring-same-mtc-versions)
-  - [Checking 'OLM Managed' setting](#checking-olm-managed-setting)
-  - [Migrating a simple application](#migrating-a-simple-application)
-  - [Migrating an application with a persistent volume](#migrating-an-application-with-a-persistent-volume)
-  - [Removing a migrated application namespace](#removing-a-migrated-application-namespace)
-
-<!-- /TOC -->
+---
+title: Pre-migration testing
+layout: default
+---
 
 # Pre-migration testing
 

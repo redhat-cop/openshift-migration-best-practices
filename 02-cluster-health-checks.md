@@ -1,17 +1,13 @@
-## [![Home](./images/home.png)](./README.md) | [Planning <](./planning.md) Cluster health checks [> Pre-migration testing](./pre-migration-testing.md)
+---
+title: Cluster Health Checks
+layout: default
+---
 
 # Cluster health checks
 
 This section contains a list of checks to run on your OpenShift 3.9+ source and 4.x target clusters before migration. The purpose of these checks is to detect issues that might affect the migration process.
 
 This list is not comprehensive and the verification of these checks does not guarantee a successful migration. We recommend getting in contact with the support team before migrating a cluster from OpenShift 3 to 4, especially if the cluster is in a production environment.
-
-- **[General health](#general-health)**
-  - [Source cluster](#source-cluster)
-  - [Target cluster](#target-cluster)
-- **[Resource capacity](#resource-capacity)**
-- **[Performance](#performance)**
-- **[Additional checks](#additional-checks)**
 
 ## General health
 

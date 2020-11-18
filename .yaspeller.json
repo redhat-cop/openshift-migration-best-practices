@@ -81,6 +81,8 @@
     "UIDs",
     "Unquiescing",
     "Velero",
-    "ms"
+    "ms",
+    "SELinux",
+    "Jekyll"
   ]
 }
