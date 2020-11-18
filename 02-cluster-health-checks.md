@@ -1,5 +1,5 @@
 ---
-title: Cluster Health Checks
+title: Cluster health checks
 layout: default
 ---
 
