@@ -1,9 +1,9 @@
 ---
-title: Post-migration considerations
+title: Postmigration considerations
 layout: default
 ---
 
-# Post-migration considerations
+# Postmigration considerations
 
 Now that the migration is completed, there are some considerations to keep in mind once you migrated to OpenShift 4.
 
