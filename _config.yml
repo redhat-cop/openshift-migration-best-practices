@@ -1,7 +1,7 @@
 theme: jekyll-rtd-theme
 title: OpenShift Migration Best Practices
 repo_url: 'https://github.com/redhat-cop/openshift-migration-best-practices'
-baseurl: '/openshift-migration-best-practices/'
+baseurl: '/openshift-migration-best-practices'
 
 plugins:
   - jekyll-paginate
