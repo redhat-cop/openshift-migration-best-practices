@@ -8,3 +8,5 @@ layout: default
 This guide provides recommendations and best practices for migrating from OpenShift Container Platform 3.9+ to OpenShift 4.x with the Migration Toolkit for Containers (MTC). The recommendations are organized into the sections listed on the left pane.
 
 Feel free to raise issues or submit pull requests on the repository: <https://github.com/redhat-cop/openshift-migration-best-practices/>.
+
+*DISCLAIMER:* This document is not a Red Hat supported document. For supported documentation please use the [Migration Toolkit for Containers official documentation](https://access.redhat.com/documentation/en-us/openshift_container_platform/4.5/html/migration_toolkit_for_containers/index).
