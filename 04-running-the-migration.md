@@ -63,6 +63,37 @@ If the required images are not present, you must update the `imagestreamtags` re
 
 If the `imagestreamtags` cannot be updated, you can manually upload equivalent images to the application namespace and update the application to reference them. [Certain `imagestreamtags`](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-prerequisites_migrating-3-4) have been removed from OpenShift 4.
 
+#### Manually pushing images from OCP3 to OCP4
+If you want to manually update the OpenShift 4 internal images to contain some versions that exist in OpenShift 3, you can do this fairly easily with `podman`. To do this with `podman`, first ensure you have [exposed the internal registry](https://docs.openshift.com/container-platform/4.1/registry/securing-exposing-registry.html#registry-exposing-secure-registry-manually_securing-exposing-registry) on both clusters. If you are using insecure registries, also update `/etc/container/registries.conf` to contain the registry host values under `[registries.insecure]` so that `podman` doesn't complain about unable to verify TLS on the registry.
+
+Next, ensure you are logged into both registries. To do this, you can follow the instructions [here](https://docs.openshift.com/container-platform/4.1/registry/securing-exposing-registry.html#registry-exposing-secure-registry-manually_securing-exposing-registry):
+```
+$ podman login -u $(oc whoami) -p $(oc whoami -t) --tls-verify=false $HOST
+```
+
+Now, pull the images you wish to duplicate. Let's take for example the deprecated `python:3.3` image:
+```
+$ podman pull $OCP3_HOST/openshift/python:3.3
+```
+
+Tag the image for the new OpenShift 4 registry:
+```
+$ podman tag $OCP3_HOST/openshift/python:3.3 $OCP4_HOST/openshift/python:3.3
+```
+
+Push the image to the OpenShift 4 registry:
+```
+$ podman push $OCP4_HOST/openshift/python:3.3
+```
+
+Verify the 3.3 tag now exists as an imagestream on OpenShift 4:
+```
+# oc get imagestream -n openshift | grep python
+python                                          $OCP4_HOST/openshift/python                                          3.3,2.7,2.7-ubi7,2.7-ubi8,3.6-ubi8,3.8 + 3 more...       6 seconds ago
+```
+
+Repeat this for any other imagestreams you wish to carry over from OpenShift 3.
+
 ### Route host names
 
 If an application uses an OpenShift route, the resource is migrated to the target cluster.
