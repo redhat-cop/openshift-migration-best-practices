@@ -238,6 +238,10 @@ The following procedure removes the MTC Operator and cluster-scoped resources:
      ```sh
      $ oc delete $(oc get clusterroles -o name | grep 'migration.openshift.io')
      ```
+   - Migration-operator cluster role:
+     ```sh
+     $ oc delete clusterrole migration-operator 
+     ```
    - Velero cluster role:
      ```sh
      $ oc delete $(oc get clusterroles -o name | grep 'velero')
@@ -246,6 +250,10 @@ The following procedure removes the MTC Operator and cluster-scoped resources:
      ```sh
      $ oc delete $(oc get clusterrolebindings -o name | grep 'migration.openshift.io')
      ```
+   - Migration-operator cluster role bindings:
+     ```sh
+     $ oc delete clusterrolebindings migration-operator
+     ```   
    - Velero cluster role bindings:
      ```sh
      $ oc delete $(oc get clusterrolebindings -o name | grep 'velero')
