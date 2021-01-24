@@ -27,7 +27,7 @@ Prepare your migration environment by checking the following:
   - You must migrate images from the internal image registry if you are not using an external image registry. If they cannot be migrated, you must re-create them manually on the target cluster.
   - Increase the [CPU and memory limits of the Migration Controller](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/migrating-applications-with-cam-3-4.html#migration-changing-migration-plan-limits_migrating-3-4) for large migrations.
   - Use the [`prune` command](https://docs.openshift.com/container-platform/4.6/applications/pruning-objects.html) to remove old builds, deployments, and images from each namespace being migrated.
-  - [Exclude PVs, imagestreams, and other resources](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/migrating-applications-with-cam-3-4.html#migration-excluding-resources_migrating-3-4) if you do not want to migrate them with MTC.
+  - [Exclude PVs, image streams, and other resources](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/migrating-applications-with-cam-3-4.html#migration-excluding-resources_migrating-3-4) if you do not want to migrate them with MTC.
 - Namespaces:
   - Check the namespaces on the target cluster to ensure that they do not duplicate namespaces being migrated.
   - Do not create namespaces for your application on the target cluster before migration because this can cause quotas to change.
@@ -43,7 +43,7 @@ You can [increase the limits](https://docs.openshift.com/container-platform/4.6/
 MTC has the following migration plan defaults to encourage smaller migrations:
 
 - 100 PVs
-- 100 Pods
+- 100 pods
 - 10 namespaces
 
 These limits should only be increased if a large plan is required for migrating a namespace that contains many resources or migrating several namespaces together because of dependency issues.
@@ -52,47 +52,45 @@ These limits should only be increased if a large plan is required for migrating 
 
 If you are using resource quotas, the following considerations might apply:
 
-- Source cluster: If you are migrating PVs, you might have to [increase the Pod limit](https://docs.openshift.com/container-platform/4.6/applications/quotas/quotas-setting-per-project.html#quotas-creating-a-quota_quotas-setting-per-project) on the source cluster. The migration process creates a temporary 'stage' Pod on the source cluster when a PV is copied. See [MIG-217 - Catch error conditions of not enough quota when attempting to do a stage/migrate](https://issues.redhat.com/browse/MIG-217).
+- Source cluster: If you are migrating PVs, you might have to [increase the pod limit](https://docs.openshift.com/container-platform/4.6/applications/quotas/quotas-setting-per-project.html#quotas-creating-a-quota_quotas-setting-per-project) on the source cluster. The migration process creates a temporary 'stage' pod on the source cluster when a PV is copied. See [MIG-217 - Catch error conditions of not enough quota when attempting to do a stage/migrate](https://issues.redhat.com/browse/MIG-217).
 - Target cluster: The resource quotas on the target cluster must be sufficient for the namespace that you are migrating. See [MIG-203 - Handle ResourceQuotas when changing storage classes, allow for possibility of keys changing](https://issues.redhat.com/browse/MIG-203).
 
 ### Internal images
 
-If your application uses images from the `openshift` namespace, you must ensure that the required versions of these images are present on the target cluster. MTC processes each imagestream in a referenced namespace and migrates the images. Images that are not included in the imagestream of a referenced namespace are not copied.
+If your application uses images from the `openshift` namespace, you must ensure that the required versions of these images are present on the target cluster. MTC processes each image stream in a referenced namespace and migrates the images. Images that are not included in the image stream of a referenced namespace are not copied.
 
-If the required images are not present, you must update the `imagestreamtags` references to use an available version that is compatible with your application.
+If the required images are not present, you can update the image stream tag references to point to an available version that is compatible with your application or manually update the image stream tags.
 
-If the `imagestreamtags` cannot be updated, you can manually upload equivalent images to the application namespace and update the application to reference them. [Certain `imagestreamtags`](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-prerequisites_migrating-3-4) have been removed from OpenShift 4.
+You can also use Podman to update an OpenShift 3 image for OpenShift 4.
 
-#### Manually pushing images from OCP3 to OCP4
-If you want to manually update the OpenShift 4 internal images to contain some versions that exist in OpenShift 3, you can do this fairly easily with `podman`. To do this with `podman`, first ensure you have [exposed the internal registry](https://docs.openshift.com/container-platform/4.1/registry/securing-exposing-registry.html#registry-exposing-secure-registry-manually_securing-exposing-registry) on both clusters. If you are using insecure registries, also update `/etc/container/registries.conf` to contain the registry host values under `[registries.insecure]` so that `podman` doesn't complain about unable to verify TLS on the registry.
+#### Manually updating an OpenShift 3 internal image stream for OpenShift 4
 
-Next, ensure you are logged into both registries. To do this, you can follow the instructions [here](https://docs.openshift.com/container-platform/4.1/registry/securing-exposing-registry.html#registry-exposing-secure-registry-manually_securing-exposing-registry):
-```
-$ podman login -u $(oc whoami) -p $(oc whoami -t) --tls-verify=false $HOST
-```
+You can use Podman to manually tag an internal OpenShift 3 image and push it to the OpenShift 4 registry to create an image stream:
 
-Now, pull the images you wish to duplicate. Let's take for example the deprecated `python:3.3` image:
-```
-$ podman pull $OCP3_HOST/openshift/python:3.3
-```
-
-Tag the image for the new OpenShift 4 registry:
-```
-$ podman tag $OCP3_HOST/openshift/python:3.3 $OCP4_HOST/openshift/python:3.3
-```
-
-Push the image to the OpenShift 4 registry:
-```
-$ podman push $OCP4_HOST/openshift/python:3.3
-```
-
-Verify the 3.3 tag now exists as an imagestream on OpenShift 4:
-```
-# oc get imagestream -n openshift | grep python
-python                                          $OCP4_HOST/openshift/python                                          3.3,2.7,2.7-ubi7,2.7-ubi8,3.6-ubi8,3.8 + 3 more...       6 seconds ago
-```
-
-Repeat this for any other imagestreams you wish to carry over from OpenShift 3.
+1. [Expose the internal registries](https://docs.openshift.com/container-platform/4.1/registry/securing-exposing-registry.html#registry-exposing-secure-registry-manually_securing-exposing-registry) on the OpenShift 3 and 4 clusters.
+1. If you are using insecure registries, add your registry host values to the `[registries.insecure]` section in `/etc/container/registries.conf` so that Podman does not encounter a TLS verification error.
+1. Log in to both registries:
+    ```
+    $ podman login -u $(oc whoami) -p $(oc whoami -t) --tls-verify=false $OCP3_HOST
+    $ podman login -u $(oc whoami) -p $(oc whoami -t) --tls-verify=false $OCP4_HOST
+    ```
+1. Pull the OpenShift 3 image you want to tag, for example, the deprecated `python:3.3` image:
+    ```
+    $ podman pull $OCP3_HOST/openshift/python:3.3
+    ```
+1. Tag the image for the OpenShift 4 registry:
+    ```
+    $ podman tag $OCP3_HOST/openshift/python:3.3 $OCP4_HOST/openshift/python:3.3
+    ```
+1. Push the image to the OpenShift 4 registry:
+    ```
+    $ podman push $OCP4_HOST/openshift/python:3.3
+    ```
+1. Verify that the image has a valid image stream tag on the OpenShift 4 cluster:
+    ```
+    $ oc get imagestream -n openshift | grep python
+    python    $OCP4_HOST/openshift/python     3.3,2.7,2.7-ubi7,2.7-ubi8,3.6-ubi8,3.8 + 3 more...      6 seconds ago
+    ```
 
 ### Route host names
 
@@ -105,7 +103,7 @@ The `openshift.io/host.generated` annotation determines whether the host name is
 
 ### Pod UIDs
 
-MTC preserves Pod UIDs during the migration process by migrating the following namespace annotations:
+MTC preserves pod UIDs during the migration process by migrating the following namespace annotations:
 
 - `openshift.io/sa.scc.mcs`
 - `openshift.io/sa.scc.supplemental-groups`

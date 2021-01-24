@@ -73,7 +73,9 @@ You can perform the following health checks on an OpenShift 4.x target cluster:
 - Check that external applications, services, and appliances that use services provided by the target cluster have access and proper permissions.
 - Verify that all internal container image dependencies are met.
 
-  If an application requires an image that is not in the application namespace, check that the image exists. For example, an application that uses the `php:7.1` base image from the PHP imagestream on an OpenShift 3.11 cluster will not work on an OpenShift 4.x cluster because that particular version is not included in the PHP imagestream for OpenShift 4. See [migration prerequisites](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-prerequisites_migrating-3-4) for a list of `imagestreamtags` that have been removed from OpenShift 4.2.
+  If an application requires an image that is not in the application namespace, check that the image exists. For example, an application that uses the `php:7.1` base image from the PHP image stream on an OpenShift 3.11 cluster will not work on an OpenShift 4.x cluster because that particular version is not included in the PHP image stream for OpenShift 4. See [migration prerequisites](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-prerequisites_migrating-3-4) for a list of image stream tags that have been removed from OpenShift 4.2.
+
+  You can [manually update the image stream tag of internal images](#manually-updating-images-from-openshift-3-to-4) from OpenShift 3 to 4 with Podman.
 
 ## Resource capacity
 
