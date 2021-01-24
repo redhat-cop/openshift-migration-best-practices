@@ -123,12 +123,6 @@ Check whether your application uses services, images, or resources in other name
 
 If the application has dependencies, you should migrate the application and the dependency namespaces in the same migration plan.
 
-### Create one migration plan at a time
-
-Create and save _one_ migration plan at a time. Do not create and save multiple migration plans.
-
-Currently, the Migration Controller watches all the namespaces and associated resources in a migration plan. Multiple migration plans result in an additional load on the source cluster and the MTC host cluster. This may change in the future: [MIG-319 - Allow migration plans to be pre-created without adding extra load to source or host cluster](https://issues.redhat.com/browse/MIG-319).
-
 ### PV move
 
 _PV move_ is faster than _PV copy_.
