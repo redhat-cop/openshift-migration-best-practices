@@ -145,7 +145,9 @@ The following table compares the _snapshot_ and _file system_ copy options.
 | **Regional limitations**  | Yes<sup>3</sup>                                         | No               |
 
 <sup>1</sup> The source and target PVs must have the same cloud storage provider.
+
 <sup>2</sup> The source and target PVs can have different storage classes.
+
 <sup>3</sup> The source and target PVs must be in the same geographic region.
 
 ### Deprecated APIs
