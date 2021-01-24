@@ -36,7 +36,7 @@ See [PV move](./running-the-migration.md#pv-move) and [PV copy](./running-the-mi
 
 **Migrating internal images**
 
-Internal images created by S2I builds are migrated. Each ImageStream reference in a given namespace is copied to the internal registry of the target cluster.
+Internal images created by S2I builds are migrated. Each image stream reference in a given namespace is copied to the internal registry of the target cluster.
 
 #### When to use MTC
 
@@ -51,47 +51,6 @@ If you can redeploy your application from pipeline, that is the best option. If 
 - [Prerequisites](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-prerequisites_migrating-3-4)
 - [About MTC](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-understanding-cam_migrating-3-4)
 - [About data copy methods](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-understanding-data-copy-methods_migrating-3-4)
-
-### Upstream migration tools
-
-You can migrate PVs with [`pvc-migrate`](https://github.com/konveyor/pvc-migrate) or images with [`imagestream-migrate`](https://github.com/konveyor/imagestream-migrate).
-
-These upstream tools offer advantages for large-scale migrations similar to the following example:
-
-- ~50+ ImageStreams per namespace
-- Multiple ~100GB+ persistent volumes
-
-The tools are smaller and more focused. They are based on [Ansible Playbooks](https://docs.ansible.com/ansible/latest/user_guide/playbooks_intro.html), Python code snippets, [Rsync](https://rsync.samba.org/), and [Skopeo](https://github.com/containers/skopeo), which simplifies customization and debugging. Their performance is better than MTC.
-
-#### Comparison of MTC and upstream tools
-
-|                   | MTC                                                                                                                                                                                                                                          | Upstream tools                                                                            |
-| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| **Processing**    | Serial processing.<br><br> MTC processes one migration plan at a time, one backup/restore operation at a time. (MTC plans to support parallel execution in the future. See [velero-487](https://github.com/vmware-tanzu/velero/issues/487).) | Parallel processing.<br><br> `imagestream-migrate` can perform parallel image migrations. |
-| **Copying**       | Two copy processes.<br><br> Backup and restore.                                                                                                                                                                                              | Single copy process.                                                                      |
-| **Debugging**     | Challenging.<br><br> A migration error can span different clusters, namespaces, and controller logs.                                                                                                                                         | Relatively easy. <br><br>Tools are based on Ansible and Python.                           |
-| **Customization** | Difficult. <br><br>Requires updating the Golang code, recompiling, and then updating the MTC Operator to deliver the new version.                                                                                                            | Relatively easy. <br><br>Tools are based on Ansible and Python.                           |
-
-#### Combining MTC and upstream tools
-
-You can use a combination of upstream tools and MTC for migration.
-
-Before migration, check your environment for the following requirements:
-
-- There must be a direct network connection between the source and target clusters. A process running on each node of the source cluster must be able to connect to an exposed OpenShift Route on the target cluster.
-- The host running `pvc-migrate` requires root access to each node of the source cluster.
-- PVs must be OpenShift Container Storage (OCS). `pvc-migrate` does not support other storage providers.
-
-The migration workflow is similar to the following procedure:
-
-1. Configure MTC to omit PVs and/or images from the migration plan by setting the following parameters in the Migration Controller manifest:
-   ```yaml
-   disable_image_migration: true
-   disable_pv_migration: true
-   ```
-2. Migrate the application workload with MTC.
-
-3. Run `pvc-migrate` to migrate PVs and/or `imagestream-migrate` to migrate images.
 
 ## Migration environment considerations
 
