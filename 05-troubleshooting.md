@@ -149,6 +149,53 @@ $ oc adm must-gather --image=openshift-migration-must-gather-rhel8:v1.3.0
 
 The `must-gather` tool generates a local directory that contains the collected data.
 
+# Direct Volume Migration troubleshooting
+
+It is possible for the rsync transfer process to stall while the Migration is
+waiting for the Direct Volume Migration to complete. This can have a number of
+potential reasons but one of the most common is that the rsync transfer pods on
+the destination cluster have failed to go into a `Running` state. If this is
+the case, you will see a warning on the `migmigration` object with the message:
+```
+Some or all transfer pods are not running for more than 10 mins on destination cluster
+```
+
+When this happens, it's worth investigating the rsync transfer pods themselves
+to determine why they are not in a `Running` state. The following are some
+potential reasons the pods may not be running.
+
+## Missing node labels on destination cluster
+
+MTC will migrate namespaces as-is on the source cluster, meaning that all
+namespace annotations are preserved. This is intentional to preserve the same
+SCC and scheduling requirements that were satisfied on the source cluster.
+Because of this, it is possible for the migration to fail due to the fact that
+some of these scheduling requirements aren't satisfied on the destination
+cluster. A good example of this is missing labels on nodes which causes a pod
+to fail to be scheduled due to the label selector not being satisfied.
+
+During Direct Volume Migration, MTC will create a set of rsync transfer pods on
+the destination cluster in these namespaces that were migrated with the same
+annotations as the source cluster. If the set of node labels are missing on the
+destination cluster, these pods will remain in a `Pending` state and you will
+see the above warning during the migration. On the transfer pods themselves,
+you should see the following status condition:
+```
+conditions:
+- lastProbeTime: null  
+  lastTransitionTime: "2021-01-25T14:52:20Z"            
+  message: '0/10 nodes are available: 10 node(s) didn't match node selector.'
+  reason: Unschedulable
+  status: "False"                                                                                                
+  type: PodScheduled    
+```
+
+On the namespace, you should also see an annotation
+`openshift.io/node-selector` which has a value that is satisfied on the source
+cluster, but not on the destination cluster. To fix this, the user must label
+the nodes on the destination with a matching label selector so that these pods
+will be scheduled.
+
 ## Previewing metrics on local Prometheus server
 
 You can use `must-gather` to create a metrics data directory dump from the last day:
