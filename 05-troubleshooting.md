@@ -142,59 +142,44 @@ Configure the web proxy configuration to allow access to the `oauth-authorizatio
 You can use the `must-gather` tool to collect information for troubleshooting or for opening a customer support case on the [Red Hat Customer Portal](https://access.redhat.com/). The `openshift-migration-must-gather-rhel8` image collects migration-specific logs and Custom Resource data that are not collected by the default `must-gather` image.
 
 Run the `must-gather` command on your cluster:
-
 ```sh
 $ oc adm must-gather --image=openshift-migration-must-gather-rhel8:v1.3.0
 ```
 
 The `must-gather` tool generates a local directory that contains the collected data.
 
-# Direct Volume Migration troubleshooting
+# Direct volume migration fails to complete
 
-It is possible for the rsync transfer process to stall while the Migration is
-waiting for the Direct Volume Migration to complete. This can have a number of
-potential reasons but one of the most common is that the rsync transfer pods on
-the destination cluster have failed to go into a `Running` state. If this is
-the case, you will see a warning on the `migmigration` object with the message:
+If direct volume migration fails to complete, the most likely cause is that the Rsync transfer pods on the target cluster remain in a `Pending` state.
+
+MTC migrates namespaces with all annotations in order to preserve security context constraints and scheduling requirements. During direct volume migration, MTC creates Rsync transfer pods on the target cluster in the namespaces that were migrated from the source cluster. If the target cluster does not have the same node labels as the source cluster, the Rsync transfer pods cannot be scheduled.
+
+You can check the `migmigration` CR status:
+```sh
+$ oc describe migmigration 88435fe0-c9f8-11e9-85e6-5d593ce65e10 -n openshift-migration
+```
+
+The output displays the following `status` message:
 ```
 Some or all transfer pods are not running for more than 10 mins on destination cluster
 ```
 
-When this happens, it's worth investigating the rsync transfer pods themselves
-to determine why they are not in a `Running` state. The following are some
-potential reasons the pods may not be running.
+To resolve this issue, perform the following steps:
 
-## Missing node labels on destination cluster
-
-MTC will migrate namespaces as-is on the source cluster, meaning that all
-namespace annotations are preserved. This is intentional to preserve the same
-SCC and scheduling requirements that were satisfied on the source cluster.
-Because of this, it is possible for the migration to fail due to the fact that
-some of these scheduling requirements aren't satisfied on the destination
-cluster. A good example of this is missing labels on nodes which causes a pod
-to fail to be scheduled due to the label selector not being satisfied.
-
-During Direct Volume Migration, MTC will create a set of rsync transfer pods on
-the destination cluster in these namespaces that were migrated with the same
-annotations as the source cluster. If the set of node labels are missing on the
-destination cluster, these pods will remain in a `Pending` state and you will
-see the above warning during the migration. On the transfer pods themselves,
-you should see the following status condition:
+1. Obtain the value of the `openshift.io/node-selector` annotation of the migrated namespaces on the source cluster:
+```sh
+$ oc get namespace -o yaml
 ```
-conditions:
-- lastProbeTime: null  
-  lastTransitionTime: "2021-01-25T14:52:20Z"            
-  message: '0/10 nodes are available: 10 node(s) didn't match node selector.'
-  reason: Unschedulable
-  status: "False"                                                                                                
-  type: PodScheduled    
+2. Add the `openshift.io/node-selector` annotation to each migrated namespace on the target cluster:
+```yml
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    openshift.io/node-selector: "region=east"
+...
 ```
-
-On the namespace, you should also see an annotation
-`openshift.io/node-selector` which has a value that is satisfied on the source
-cluster, but not on the destination cluster. To fix this, the user must label
-the nodes on the destination with a matching label selector so that these pods
-will be scheduled.
+3. Re-run the migration plan.
 
 ## Previewing metrics on local Prometheus server
 
@@ -287,7 +272,7 @@ The following procedure removes the MTC Operator and cluster-scoped resources:
      ```
    - Migration-operator cluster role:
      ```sh
-     $ oc delete clusterrole migration-operator 
+     $ oc delete clusterrole migration-operator
      ```
    - Velero cluster role:
      ```sh
