@@ -98,6 +98,100 @@ The migration debug tree can be viewed and traced by querying specific label sel
 
 See [Viewing migration custom resources](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/troubleshooting-3-4.html#migration-viewing-migration-crs_migrating-3-4) for more information.
 
+## Accessing more information about Velero Resources using the 'velero' CLI tool
+
+In addition to viewing the Backup and Restore resources, it is possible to obtain more information by invoking the `velero` binary.  This utility will look at a lower level of information stored in the object storage associated with each backup or restore.  This may help to show why a particular resource was not restored or give more context as to why a Velero operation failed.
+
+MTC ships the `velero` binary in the running velero container, a user may access it using:
+
+```sh
+  $ oc exec velero-$podname -n openshift-migration -- ./velero --help
+
+  or 
+
+  $ oc exec $(oc get pods -n openshift-migration -o name | grep velero) -n openshift-migration -- ./velero --help
+```
+
+- `velero {backup|restore} describe $resourceid` 
+  - `describe`: will provide a summary of warnings and errors Velero saw while processing the action
+    - example: `velero backup describe 0e44ae00-5dc3-11eb-9ca8-df7e5254778b-2d8ql` 
+      - Where '0e44ae00-5dc3-11eb-9ca8-df7e5254778b-2d8ql' is the name of a Velero Backup custom resource
+
+- `velero {backup|restore} logs $resourceid`
+  - `logs`: will provide a lower level output of the logs associated to this specific action
+    - example: `velero restore logs ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf`
+      - Where 'ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf' is the name of a Velero Restore custom resource
+
+
+### Debugging a 'PartialFailure'
+
+Migrations may display a warning of 'PartialFailure'.  A PartialFailure is when Velero ran into an issue which was unexpected but is not failing the operation.  For example a custom resource was not able to be restored because the Custom Resource Definition is missing or has a wrong version.  Velero will record that the specific Custom Resource could not be restored and process the rest of the items from the Backup.  
+
+When a migration displays a PartialFailure the administrator should use the `velero restore logs` command to see the specifics and determine if manual intervention is needed on a specific resource or if the warning is safe to ignore.
+
+- Note there is a task on the roadmap for improving the experience for debugging Partial Failures:  [MIG-353 Enhance Velero error reporting so problems that cause partial failures (and even full failures) are more visible in structured way](https://issues.redhat.com/browse/MIG-353)
+
+
+Below are a few examples debugging a failed restore due to a Group Version Kind mismatch.  The failure scenario is available at https://github.com/pranavgaikwad/mtc-breakfix/tree/master/03-Gvk.
+
+- Example looking at the associated 'MigMigration' resource
+[full output](https://gist.github.com/jwmatthews/001ff42bf5e712ba2eab92df306ed34e)
+
+```sh
+oc get migmigration ccc7c2d0-6017-11eb-afab-85d0007f5a19 -o yaml
+
+status:
+  conditions:
+  - category: Warn
+    durable: true
+    lastTransitionTime: "2021-01-26T20:48:40Z"
+    message: 'Final Restore openshift-migration/ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf: partially failed on destination cluster'
+    status: "True"
+    type: VeleroFinalRestorePartiallyFailed
+  - category: Advisory
+    durable: true
+    lastTransitionTime: "2021-01-26T20:48:42Z"
+    message: The migration has completed with warnings, please look at `Warn` conditions.
+    reason: Completed
+    status: "True"
+    type: SucceededWithWarnings
+```
+
+- Example using `velero restore describe`
+[full output](https://gist.github.com/9a3ec8f51e12b84f8bb995286223bdda)
+```sh
+
+$ oc exec $(oc get pods -n openshift-migration -o name | grep velero) -n openshift-migration -- ./velero restore describe ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf 
+
+.....
+
+Phase:  PartiallyFailed (run 'velero restore logs ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf' for more information)
+
+Errors:
+  Velero:     <none>
+  Cluster:    <none>
+  Namespaces:
+    gvk-demo:  error restoring gvkdemoes.konveyor.openshift.io/gvk-demo/gvk-demo: the server could not find the requested resource
+
+...
+```
+
+- Example using `velero restore logs`
+
+[full output](https://gist.github.com/jwmatthews/7dc7ed9eb0c4d0611f30675074b9b7d7)
+```sh
+
+$ oc exec $(oc get pods -n openshift-migration -o name | grep velero) -n openshift-migration -- ./velero restore logs ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf
+
+...
+
+time="2021-01-26T20:48:37Z" level=info msg="Attempting to restore GvkDemo: gvk-demo" logSource="pkg/restore/restore.go:1107" restore=openshift-migration/ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf
+time="2021-01-26T20:48:37Z" level=info msg="error restoring gvk-demo: the server could not find the requested resource" logSource="pkg/restore/restore.go:1170" restore=openshift-migration/ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf
+
+...
+```
+
+
 # Error messages
 
 ## `certificate error` when logging in to the MTC console for the first time
