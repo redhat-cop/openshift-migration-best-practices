@@ -98,6 +98,100 @@ The migration debug tree can be viewed and traced by querying specific label sel
 
 See [Viewing migration custom resources](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/troubleshooting-3-4.html#migration-viewing-migration-crs_migrating-3-4) for more information.
 
+## Accessing more information about Velero Resources using the 'velero' CLI tool
+
+In addition to viewing the Backup and Restore resources, it is possible to obtain more information by invoking the `velero` binary.  This utility will look at a lower level of information stored in the object storage associated with each backup or restore.  This may help to show why a particular resource was not restored or give more context as to why a Velero operation failed.
+
+MTC ships the `velero` binary in the running velero container, a user may access it using:
+
+```sh
+  $ oc exec velero-$podname -n openshift-migration -- ./velero --help
+
+  or 
+
+  $ oc exec $(oc get pods -n openshift-migration -o name | grep velero) -n openshift-migration -- ./velero --help
+```
+
+- `velero {backup|restore} describe $resourceid` 
+  - `describe`: will provide a summary of warnings and errors Velero saw while processing the action
+    - example: `velero backup describe 0e44ae00-5dc3-11eb-9ca8-df7e5254778b-2d8ql` 
+      - Where '0e44ae00-5dc3-11eb-9ca8-df7e5254778b-2d8ql' is the name of a Velero Backup custom resource
+
+- `velero {backup|restore} logs $resourceid`
+  - `logs`: will provide a lower level output of the logs associated to this specific action
+    - example: `velero restore logs ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf`
+      - Where 'ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf' is the name of a Velero Restore custom resource
+
+
+### Debugging a 'PartialFailure'
+
+Migrations may display a warning of 'PartialFailure'.  A PartialFailure is when Velero ran into an issue which was unexpected but is not failing the operation.  For example a custom resource was not able to be restored because the Custom Resource Definition is missing or has a wrong version.  Velero will record that the specific Custom Resource could not be restored and process the rest of the items from the Backup.  
+
+When a migration displays a PartialFailure the administrator should use the `velero restore logs` command to see the specifics and determine if manual intervention is needed on a specific resource or if the warning is safe to ignore.
+
+- Note there is a task on the roadmap for improving the experience for debugging Partial Failures:  [MIG-353 Enhance Velero error reporting so problems that cause partial failures (and even full failures) are more visible in structured way](https://issues.redhat.com/browse/MIG-353)
+
+
+Below are a few examples debugging a failed restore due to a Group Version Kind mismatch.  The failure scenario is available at https://github.com/pranavgaikwad/mtc-breakfix/tree/master/03-Gvk.
+
+- Example looking at the associated 'MigMigration' resource
+[full output](https://gist.github.com/jwmatthews/001ff42bf5e712ba2eab92df306ed34e)
+
+```sh
+oc get migmigration ccc7c2d0-6017-11eb-afab-85d0007f5a19 -o yaml
+
+status:
+  conditions:
+  - category: Warn
+    durable: true
+    lastTransitionTime: "2021-01-26T20:48:40Z"
+    message: 'Final Restore openshift-migration/ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf: partially failed on destination cluster'
+    status: "True"
+    type: VeleroFinalRestorePartiallyFailed
+  - category: Advisory
+    durable: true
+    lastTransitionTime: "2021-01-26T20:48:42Z"
+    message: The migration has completed with warnings, please look at `Warn` conditions.
+    reason: Completed
+    status: "True"
+    type: SucceededWithWarnings
+```
+
+- Example using `velero restore describe`
+[full output](https://gist.github.com/9a3ec8f51e12b84f8bb995286223bdda)
+```sh
+
+$ oc exec $(oc get pods -n openshift-migration -o name | grep velero) -n openshift-migration -- ./velero restore describe ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf 
+
+.....
+
+Phase:  PartiallyFailed (run 'velero restore logs ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf' for more information)
+
+Errors:
+  Velero:     <none>
+  Cluster:    <none>
+  Namespaces:
+    gvk-demo:  error restoring gvkdemoes.konveyor.openshift.io/gvk-demo/gvk-demo: the server could not find the requested resource
+
+...
+```
+
+- Example using `velero restore logs`
+
+[full output](https://gist.github.com/jwmatthews/7dc7ed9eb0c4d0611f30675074b9b7d7)
+```sh
+
+$ oc exec $(oc get pods -n openshift-migration -o name | grep velero) -n openshift-migration -- ./velero restore logs ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf
+
+...
+
+time="2021-01-26T20:48:37Z" level=info msg="Attempting to restore GvkDemo: gvk-demo" logSource="pkg/restore/restore.go:1107" restore=openshift-migration/ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf
+time="2021-01-26T20:48:37Z" level=info msg="error restoring gvk-demo: the server could not find the requested resource" logSource="pkg/restore/restore.go:1170" restore=openshift-migration/ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf
+
+...
+```
+
+
 # Error messages
 
 ## `certificate error` when logging in to the MTC console for the first time
@@ -142,59 +236,44 @@ Configure the web proxy configuration to allow access to the `oauth-authorizatio
 You can use the `must-gather` tool to collect information for troubleshooting or for opening a customer support case on the [Red Hat Customer Portal](https://access.redhat.com/). The `openshift-migration-must-gather-rhel8` image collects migration-specific logs and Custom Resource data that are not collected by the default `must-gather` image.
 
 Run the `must-gather` command on your cluster:
-
 ```sh
 $ oc adm must-gather --image=openshift-migration-must-gather-rhel8:v1.3.0
 ```
 
 The `must-gather` tool generates a local directory that contains the collected data.
 
-# Direct Volume Migration troubleshooting
+# Direct volume migration fails to complete
 
-It is possible for the rsync transfer process to stall while the Migration is
-waiting for the Direct Volume Migration to complete. This can have a number of
-potential reasons but one of the most common is that the rsync transfer pods on
-the destination cluster have failed to go into a `Running` state. If this is
-the case, you will see a warning on the `migmigration` object with the message:
+If direct volume migration fails to complete, the most likely cause is that the Rsync transfer pods on the target cluster remain in a `Pending` state.
+
+MTC migrates namespaces with all annotations in order to preserve security context constraints and scheduling requirements. During direct volume migration, MTC creates Rsync transfer pods on the target cluster in the namespaces that were migrated from the source cluster. If the target cluster does not have the same node labels as the source cluster, the Rsync transfer pods cannot be scheduled.
+
+You can check the `migmigration` CR status:
+```sh
+$ oc describe migmigration 88435fe0-c9f8-11e9-85e6-5d593ce65e10 -n openshift-migration
+```
+
+The output displays the following `status` message:
 ```
 Some or all transfer pods are not running for more than 10 mins on destination cluster
 ```
 
-When this happens, it's worth investigating the rsync transfer pods themselves
-to determine why they are not in a `Running` state. The following are some
-potential reasons the pods may not be running.
+To resolve this issue, perform the following steps:
 
-## Missing node labels on destination cluster
-
-MTC will migrate namespaces as-is on the source cluster, meaning that all
-namespace annotations are preserved. This is intentional to preserve the same
-SCC and scheduling requirements that were satisfied on the source cluster.
-Because of this, it is possible for the migration to fail due to the fact that
-some of these scheduling requirements aren't satisfied on the destination
-cluster. A good example of this is missing labels on nodes which causes a pod
-to fail to be scheduled due to the label selector not being satisfied.
-
-During Direct Volume Migration, MTC will create a set of rsync transfer pods on
-the destination cluster in these namespaces that were migrated with the same
-annotations as the source cluster. If the set of node labels are missing on the
-destination cluster, these pods will remain in a `Pending` state and you will
-see the above warning during the migration. On the transfer pods themselves,
-you should see the following status condition:
+1. Obtain the value of the `openshift.io/node-selector` annotation of the migrated namespaces on the source cluster:
+```sh
+$ oc get namespace -o yaml
 ```
-conditions:
-- lastProbeTime: null  
-  lastTransitionTime: "2021-01-25T14:52:20Z"            
-  message: '0/10 nodes are available: 10 node(s) didn't match node selector.'
-  reason: Unschedulable
-  status: "False"                                                                                                
-  type: PodScheduled    
+2. Add the `openshift.io/node-selector` annotation to each migrated namespace on the target cluster:
+```yml
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    openshift.io/node-selector: "region=east"
+...
 ```
-
-On the namespace, you should also see an annotation
-`openshift.io/node-selector` which has a value that is satisfied on the source
-cluster, but not on the destination cluster. To fix this, the user must label
-the nodes on the destination with a matching label selector so that these pods
-will be scheduled.
+3. Re-run the migration plan.
 
 ## Previewing metrics on local Prometheus server
 
@@ -287,7 +366,7 @@ The following procedure removes the MTC Operator and cluster-scoped resources:
      ```
    - Migration-operator cluster role:
      ```sh
-     $ oc delete clusterrole migration-operator 
+     $ oc delete clusterrole migration-operator
      ```
    - Velero cluster role:
      ```sh
