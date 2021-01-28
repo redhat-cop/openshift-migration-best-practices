@@ -67,7 +67,7 @@ You can also use Podman to update an OpenShift 3 image for OpenShift 4.
 
 You can use Podman to manually tag an internal OpenShift 3 image and push it to the OpenShift 4 registry to create an image stream:
 
-1. [Expose the internal registries](https://docs.openshift.com/container-platform/4.1/registry/securing-exposing-registry.html#registry-exposing-secure-registry-manually_securing-exposing-registry) on the OpenShift 3 and 4 clusters.
+1. Expose the internal registries on the OpenShift [3](https://docs.openshift.com/container-platform/3.11/install_config/registry/securing_and_exposing_registry.html#exposing-the-registry) and [4](https://docs.openshift.com/container-platform/4.6/registry/securing-exposing-registry.html#registry-exposing-secure-registry-manually_securing-exposing-registry).
 1. If you are using insecure registries, add your registry host values to the `[registries.insecure]` section in `/etc/container/registries.conf` so that Podman does not encounter a TLS verification error.
 1. Log in to both registries:
     ```
