@@ -15,7 +15,7 @@ Debug flowchart (in progress)
 
 - [MTC Debug flowchart](https://app.lucidchart.com/documents/view/d0907ce1-ccf1-4226-86eb-e5332f9d42a4/0_0)
 
-# MTC custom resources
+## MTC custom resources
 
 The following diagram describes the MTC custom resources (CRs). Each object is a standard Kubernetes CR.
 
@@ -25,7 +25,7 @@ TODO: Need to update diagram with MigAnalytic and MigHook
 
 ![CRD Architecture](./images/CRDArch.png)
 
-# Debugging tips
+## Debugging MTC resources using the web console
 
 You can view the resources of a migration plan in the MTC web console:
 
@@ -56,9 +56,9 @@ Final migrations have two Backup and two Restore objects. The first Backup objec
 
 The first Restore restores these storage objects on the target cluster. The final Restore restores the original application Backup to the target cluster.
 
-## Querying the migration resources from the CLI
+## Debugging MTC resources from the command line
 
-The migration debug tree can be viewed and traced by querying specific label selectors.
+The migration debug tree can be viewed from the command line by querying specific label selectors.
 
 - To view all `migmigration` objects associated with the `test` plan:
 
@@ -107,14 +107,14 @@ MTC ships the `velero` binary in the running velero container, a user may access
 ```sh
   $ oc exec velero-$podname -n openshift-migration -- ./velero --help
 
-  or 
+  or
 
   $ oc exec $(oc get pods -n openshift-migration -o name | grep velero) -n openshift-migration -- ./velero --help
 ```
 
-- `velero {backup|restore} describe $resourceid` 
+- `velero {backup|restore} describe $resourceid`
   - `describe`: will provide a summary of warnings and errors Velero saw while processing the action
-    - example: `velero backup describe 0e44ae00-5dc3-11eb-9ca8-df7e5254778b-2d8ql` 
+    - example: `velero backup describe 0e44ae00-5dc3-11eb-9ca8-df7e5254778b-2d8ql`
       - Where '0e44ae00-5dc3-11eb-9ca8-df7e5254778b-2d8ql' is the name of a Velero Backup custom resource
 
 - `velero {backup|restore} logs $resourceid`
@@ -161,7 +161,7 @@ status:
 [full output](https://gist.github.com/9a3ec8f51e12b84f8bb995286223bdda)
 ```sh
 
-$ oc exec $(oc get pods -n openshift-migration -o name | grep velero) -n openshift-migration -- ./velero restore describe ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf 
+$ oc exec $(oc get pods -n openshift-migration -o name | grep velero) -n openshift-migration -- ./velero restore describe ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf
 
 .....
 
@@ -191,10 +191,9 @@ time="2021-01-26T20:48:37Z" level=info msg="error restoring gvk-demo: the server
 ...
 ```
 
+## Error messages
 
-# Error messages
-
-## `certificate error` when logging in to the MTC console for the first time
+### CA certificate error when logging in to the MTC console for the first time
 
 The following error message might appear when you log in to the MTC console for the first time:
 
@@ -225,13 +224,13 @@ Network access:
 
   The console requires uninterrupted network access to the Node.js server, which provides the JavaScript bundle and performs OAuth authentication, and the API server. See [BZ#1878824](https://bugzilla.redhat.com/show_bug.cgi?id=1878824).
 
-## `Connection has timed out` message after accepting CA certificate
+### Connection time-out after accepting CA certificate
 
-If you have accepted a self-signed certificate and a blank page appears, followed by a `Connection has timed out` message, the likely cause is a web proxy blocking access to the OAuth server.
+If you acce[t] a self-signed certificate and a blank page appears, followed by a `Connection has timed out` message, the likely cause is a web proxy blocking access to the OAuth server.
 
 Configure the web proxy configuration to allow access to the `oauth-authorization-server` URL. See [BZ#1890675](https://bugzilla.redhat.com/show_bug.cgi?id=1890675).
 
-# Using `must-gather`
+## Using `must-gather`
 
 You can use the `must-gather` tool to collect information for troubleshooting or for opening a customer support case on the [Red Hat Customer Portal](https://access.redhat.com/). The `openshift-migration-must-gather-rhel8` image collects migration-specific logs and Custom Resource data that are not collected by the default `must-gather` image.
 
@@ -242,7 +241,7 @@ $ oc adm must-gather --image=openshift-migration-must-gather-rhel8:v1.3.0
 
 The `must-gather` tool generates a local directory that contains the collected data.
 
-# Direct volume migration fails to complete
+## Direct volume migration fails to complete
 
 If direct volume migration fails to complete, the most likely cause is that the Rsync transfer pods on the target cluster remain in a `Pending` state.
 
@@ -285,19 +284,19 @@ $ oc adm must-gather --image quay.io/konveyor/must-gather:latest -- /usr/bin/gat
 
 You can view the data with a [local Prometheus instance](https://github.com/konveyor/must-gather#preview-metrics-on-local-prometheus-server).
 
-# Performance metrics
+## Performance metrics
 
 For information about the metrics recorded by the MTC controller, see the [`mig-operator` documentation](https://github.com/konveyor/mig-operator/blob/master/docs/usage/Metrics.md#accessing-mig-controller-prometheus-metrics).
 
 This documentation includes [useful queries](https://github.com/konveyor/mig-operator/blob/master/docs/usage/Metrics.md#useful-queries) for performance monitoring.
 
-# Cleaning up a failed migration
+## Cleaning up a failed migration
 
-## Deleting resources
+### Deleting resources
 
 Ensure that stage pods are cleaned up. If a migration fails during stage or copy, the stage pods are retained to allow debugging. Before retrying a migration, you must delete the stage pods manually.
 
-## Unquiescing an application
+### Unquiescing an application
 
 If your application was quiesced during migration, you should `unquiesce` it by scaling it back to its initial replica count.
 
@@ -313,9 +312,9 @@ Alternatively, you can scale your deployment with the `oc scale` command:
 $ oc scale deployment <deployment_name> --replicas=<desired_replicas>
 ```
 
-## Note on labels applied to help track what was migrated
+### Labels for premigration settings
 
-While quiescing a source application, MTC annotates the original replica count on the deployment object for reference:
+When a source application is quiesced during migration, MTC adds a label indicating the original replica count to the `deployment` resource:
 
 ```yaml
 apiVersion: extensions/v1beta1
@@ -326,7 +325,7 @@ metadata:
     migration.openshift.io/preQuiesceReplicas: "1"
 ```
 
-# Deleting the MTC Operator and resources
+## Deleting the MTC Operator and resources
 
 The following procedure removes the MTC Operator and cluster-scoped resources:
 
