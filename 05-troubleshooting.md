@@ -123,6 +123,8 @@ velero <resource> describe <resource_id>
 $ oc exec $(oc get pods -n openshift-migration -o name | grep velero) -- ./velero backup describe 0e44ae00-5dc3-11eb-9ca8-df7e5254778b-2d8ql
 ```
 
+#### Velero `logs` command
+
 The `logs` command provides a lower level output of the logs associated with a Velero resource:
 ```sh
 velero <resource> logs <resource_id>
@@ -145,57 +147,64 @@ For example, if a custom resource (CR) cannot be restored because the custom res
 The following example describes how to debug a partially failed `restore` caused by GVK incompatibility. The CRD version on the source cluster differs from the CRD version on the target cluster. See the [GVK incompatibility exercise](https://github.com/pranavgaikwad/mtc-breakfix/tree/master/03-Gvk) for details.
 
 1. Obtain the `MigMigration` instance associated with the partial failure:
-  ```sh
-  oc get migmigration ccc7c2d0-6017-11eb-afab-85d0007f5a19 -o yaml
-  ```
-  **Example output**
-  ```yml
-  status:
-    conditions:
-    - category: Warn
-      durable: true
-      lastTransitionTime: "2021-01-26T20:48:40Z"
-      message: 'Final Restore openshift-migration/ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf: partially failed on destination cluster'
-      status: "True"
-      type: VeleroFinalRestorePartiallyFailed
-    - category: Advisory
-      durable: true
-      lastTransitionTime: "2021-01-26T20:48:42Z"
-      message: The migration has completed with warnings, please look at `Warn` conditions.
-      reason: Completed
-      status: "True"
-      type: SucceededWithWarnings
-  ```
-  [Full output](https://gist.github.com/jwmatthews/001ff42bf5e712ba2eab92df306ed34e)
+    ```sh
+    oc get migmigration ccc7c2d0-6017-11eb-afab-85d0007f5a19 -o yaml
+    ```
+
+    **Example output**
+
+    ```yml
+    status:
+      conditions:
+      - category: Warn
+        durable: true
+        lastTransitionTime: "2021-01-26T20:48:40Z"
+        message: 'Final Restore openshift-migration/ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf: partially failed on destination cluster'
+        status: "True"
+        type: VeleroFinalRestorePartiallyFailed
+      - category: Advisory
+        durable: true
+        lastTransitionTime: "2021-01-26T20:48:42Z"
+        message: The migration has completed with warnings, please look at `Warn` conditions.
+        reason: Completed
+        status: "True"
+        type: SucceededWithWarnings
+    ```
+    [Full output](https://gist.github.com/jwmatthews/001ff42bf5e712ba2eab92df306ed34e)
 
 2. Check the status of the `restore` resource by running the `describe` command:
-  ```sh
-  $ oc exec $(oc get pods -n openshift-migration -o name | grep velero) -n openshift-migration -- ./velero restore describe ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf
-  ```
-  **Example output**
-  ```yml
-  Phase:  PartiallyFailed (run 'velero restore logs ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf' for more information)
+    ```sh
+    $ oc exec $(oc get pods -n openshift-migration -o name | grep velero) -n openshift-migration -- ./velero restore describe ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf
+    ```
 
-  Errors:
-    Velero:     <none>
-    Cluster:    <none>
-    Namespaces:
-      gvk-demo:  error restoring gvkdemoes.konveyor.openshift.io/gvk-demo/gvk-demo: the server could not find the requested resource
-  ```
-  [Full output](https://gist.github.com/9a3ec8f51e12b84f8bb995286223bdda)
+    **Example output**
+
+    ```yml
+    Phase:  PartiallyFailed (run 'velero restore logs ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf' for more information)
+
+    Errors:
+      Velero:     <none>
+      Cluster:    <none>
+      Namespaces:
+        gvk-demo:  error restoring gvkdemoes.konveyor.openshift.io/gvk-demo/gvk-demo: the server could not find the requested resource
+    ```
+    [Full output](https://gist.github.com/9a3ec8f51e12b84f8bb995286223bdda)
 
 3. Check the `restore` logs by running the `logs` command:
-  ```sh
-  $ oc exec $(oc get pods -n openshift-migration -o name | grep velero) -n openshift-migration -- ./velero restore logs ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf
-  ```
-  **Example output**
-  ```yml
-  time="2021-01-26T20:48:37Z" level=info msg="Attempting to restore GvkDemo: gvk-demo" logSource="pkg/restore/restore.go:1107" restore=openshift-migration/ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf
-  time="2021-01-26T20:48:37Z" level=info msg="error restoring gvk-demo: the server could not find the requested resource" logSource="pkg/restore/restore.go:1170" restore=openshift-migration/ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf
-  ```
-  [Full output](https://gist.github.com/jwmatthews/7dc7ed9eb0c4d0611f30675074b9b7d7)
+    ```sh
+    $ oc exec $(oc get pods -n openshift-migration -o name | grep velero) -n openshift-migration -- ./velero restore logs ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf
+    ```
 
-The `restore` log error message, `the server could not find the requested resource`, indicates the cause of the partially failed migration.
+    **Example output**
+
+    ```yml
+    time="2021-01-26T20:48:37Z" level=info msg="Attempting to restore GvkDemo: gvk-demo" logSource="pkg/restore/restore.go:1107" restore=openshift-migration/ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf
+    time="2021-01-26T20:48:37Z" level=info msg="error restoring gvk-demo: the server could not find the requested resource" logSource="pkg/restore/restore.go:1170" restore=openshift-migration/ccc7c2d0-6017-11eb-afab-85d0007f5a19-x4lbf
+    ```
+
+    [Full output](https://gist.github.com/jwmatthews/7dc7ed9eb0c4d0611f30675074b9b7d7)
+
+    The `restore` log error message, `the server could not find the requested resource`, indicates the cause of the partially failed migration.
 
 ## Error messages
 
