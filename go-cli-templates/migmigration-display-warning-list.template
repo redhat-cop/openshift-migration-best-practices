@@ -1,0 +1,11 @@
+{{range .items}}
+    Name:{{"\t\t"}}{{.metadata.name}}{{"\t"}}
+    Migplan: {{"\t\t"}}{{ .spec.migPlanRef.name  }}
+    Migmigration Uid:{{"\t"}}{{ .metadata.uid }}
+    {{range .status.conditions}}
+        {{- if eq .category "Warn" -}}
+            {{ "Warning:\t"}}{{ .type }}{{"\n\t"}}{{"Message:\t"}}{{ .message }}
+        {{- end -}}
+    {{end}}
+    {{ "errors:\t\t"  }}{{ .errors  }}{{"\n"}}
+{{end}}

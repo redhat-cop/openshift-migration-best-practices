@@ -1,0 +1,12 @@
+{{range .items}}
+    Name:{{"\t"}}{{.metadata.name}}
+    {{range .status.conditions}}
+        {{ if and (eq .category "Advisory") (eq .type "Failed") }}
+        {{ "State:\tFailed"}}
+        {{ "Phase\t" }}{{ .reason  }}
+        {{ "Message:\t" }}{{ .message }}
+        {{ end }}
+    {{end}}
+    {{ "errors:\t"  }}{{ .status.errors  }}
+{{printf "-----"}}
+{{end}}
