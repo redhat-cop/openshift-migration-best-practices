@@ -15,6 +15,10 @@ Additional resources:
 
 ### MTC custom resources
 
+The following diagram describes the MTC debug flow.
+
+![Debug flow](./images/mtc-1.4.z-debugging-guide.jpeg)
+
 The following diagram describes the MTC custom resources (CRs). Each object is a standard Kubernetes CR.
 
 You can manage the MTC resources with the standard create, read, update, and delete operations using the `kubectl` and `oc` clients or directly, using the web interface.
