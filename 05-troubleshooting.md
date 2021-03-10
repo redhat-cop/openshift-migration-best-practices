@@ -15,6 +15,10 @@ Additional resources:
 
 ### MTC custom resources
 
+The following diagram describes the MTC debug flow.
+
+![Debug flow](./images/mtc-1.4.z-debugging-guide.jpeg)
+
 The following diagram describes the MTC custom resources (CRs). Each object is a standard Kubernetes CR.
 
 You can manage the MTC resources with the standard create, read, update, and delete operations using the `kubectl` and `oc` clients or directly, using the web interface.
@@ -70,6 +74,56 @@ You can view the migration debug tree and query specific label selectors.
   ```
   The columns display the associated plan name, itinerary step, and phase.
 
+- To view the status of all the completed migmigration associated with the
+ `test` migration plan:
+  ```sh
+  $  oc get migmigration -l 'migration.openshift.io/migplan-name=test' -o\
+      go-template-file=./go-cli-templates/migmigration-completed-list.template
+  ```
+  
+  **Example output**
+  ```
+    Name:       51886050-6d52-11eb-98e7-b515603f1bc7
+    Migplan:    test
+    Result:     SucceededWithWarnings 
+
+
+    Name:       b4d045f0-6d58-11eb-98e7-b515603f1bc7
+    Migplan:    test
+    Result:     SucceededWithWarnings 
+  ```
+  
+  It could be concluded from the above output if any of the migration
+   Succeeded, SucceededWithWarnings or Failed.
+
+- To view the warnings of all the completed migmigration associated with the
+   `test` migration plan:
+   ```sh
+   $ oc get migmigration -l 'migration.openshift.io/migplan-name=test' -o \
+  go-template-file=go-cli-templates/migmigration-display-warning-list.template
+   ```
+  
+  **Example output**
+  ```
+      Name:       51886050-6d52-11eb-98e7-b515603f1bc7
+      Migplan:    test
+      Warning:    DirectVolumeMigrationFailed
+          Message:        DirectVolumeMigration (dvm): openshift-migration/51886050-6d52-11eb-98e7-b515603f1bc7-z9zfj failed. See in dvm status.Errors
+      errors:     <no value>
+  
+  
+      Name:       b4d045f0-6d58-11eb-98e7-b515603f1bc7
+      Migplan:    test
+      Warning:    DirectVolumeMigrationFailed
+          Message:        DirectVolumeMigration (dvm): openshift-migration/b4d045f0-6d58-11eb-98e7-b515603f1bc7-4c894 failed. See in dvm status.Errors
+      errors:     <no value>
+  ```
+  
+  The above command can help in determining what caused the warning or
+  failure. If a migration SucceededWithWarnings, look at the `Warning` field.
+  If the previous output showed a migration failed, look at the `errors`
+  field.
+
 - To list all `Backup` resources:
   ```sh
   $ oc get backup -n openshift-migration
@@ -87,6 +141,43 @@ You can view the migration debug tree and query specific label selectors.
   ```sh
   $ oc describe backup 88435fe0-c9f8-11e9-85e6-5d593ce65e10 -n openshift-migration
   ```
+
+- It is possible the failure of migmigration is caused by
+ directvolumemigration, in order to get the list of failed
+  directvolumemigration, grep the UID from the above output of
+   failed migrations:
+  ```sh
+   oc get dvm -l migmigration=<uid>
+  ```
+  
+  **Example Output**
+  ```
+  NAME                                         AGE
+  b4d045f0-6d58-11eb-98e7-b515603f1bc7-4c894   5d21h
+  ```
+
+- To see the failure list of dvms for a migmigration and their reasons:
+  ```sh
+  $ oc get dvm -l migmigration=<uid> \
+   -o go-template-file=go-cli-templates/dvm-display-failure-list.template
+  ```
+  
+  **Example Output**
+  ```
+  
+    Name:       b4d045f0-6d58-11eb-98e7-b515603f1bc7-4c894
+    
+        
+        State:  Failed
+        Phase   WaitForRsyncClientPodsCompleted
+        Message:        The migration has failed.  See: Errors.
+        
+    
+    errors:     [One or more pods are in error state]
+-----
+  ```
+  
+  
 
 See [Viewing migration custom resources](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/troubleshooting-3-4.html#migration-viewing-migration-crs_migrating-3-4) for more information.
 
@@ -258,7 +349,43 @@ The `must-gather` tool generates a local directory that contains the collected d
 
 ## Direct volume migration fails to complete
 
-If direct volume migration fails to complete, the most likely cause is that the Rsync transfer pods on the target cluster remain in a `Pending` state.
+For direct volume migrations, we create a few dependencies:
+1. Transfer pod on the destination cluster in target namespace. This pod
+ has rsync daemon container and stunnel container
+2. Stunnel service on the destination cluster in target namespace, this
+ creates the networking presence for the stunnel container in kubernetes
+3. Stunnel route on the destination cluster in target namespace, this
+ creates a route to be exposed on the internet
+4. Stunnel pod on the source cluster in source namespace, this connects to
+ the target stunnel container in transfer pod through stunnel route on the
+  target namespace
+5. Rsync client pods on the source cluster in source namespace, this runs
+ the actual rsync command for moving the PVC data.
+
+
+If direct volume migration fails to complete, it could be one of the following
+buckets of errors:
+
+1. Error in creating dependencies: If creating any of the above dependencies
+ fails, it could lead to a failure. The error message will be present in
+ DVM status and in the errors fields. Use the dvm failure list command to
+ find this.
+
+2. Stuck in waiting for dependencies to be healthy: It could be the case
+ that the pods on either source or destination is not running or the route
+  is not admitted. In both these cases, DVM is hang until the pod is
+  running or route is admitted. When the pods are stuck in a non-healthy
+  state, you will find a Warning in 10 mins of DVM being stuck here. Use
+  the dvm command to see warning on the dvm status
+     
+3. Rsync exits with error: this happens when all the dependencies are met
+ and healthy and the rysnc fail because of some reason. The dvm controller
+  does not clean up the failed rsync client pods so the logs can be inspected.
+
+#### Example of debugging with dependency pod in pending state:
+
+A very likely cause of direct volume migration failing to complete is the
+ Rsync transfer pods on the target cluster remain in a `Pending` state.
 
 MTC migrates namespaces with all annotations in order to preserve security context constraints and scheduling requirements. During direct volume migration, MTC creates Rsync transfer pods on the target cluster in the namespaces that were migrated from the source cluster. If the target cluster does not have the same node labels as the source cluster, the Rsync transfer pods cannot be scheduled.
 
