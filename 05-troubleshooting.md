@@ -68,61 +68,51 @@ You can view the migration debug tree and query specific label selectors.
   ```
 
   **Example output**
-  ```
+  ```sh
   NAME                                  READY  PLAN  STAGE  ITINERARY  PHASE
   09a8bf20-fdc5-11ea-a447-cb5249018d21         test  false  Final      Completed
   ```
   The columns display the associated plan name, itinerary step, and phase.
 
-- To view the status of all the completed migmigration associated with the
- `test` migration plan:
+- To view all completed `migmigration` resources associated with the `test` migration plan:
   ```sh
-  $  oc get migmigration -l 'migration.openshift.io/migplan-name=test' -o\
-      go-template-file=./go-cli-templates/migmigration-completed-list.template
+  $ oc get migmigration -l 'migration.openshift.io/migplan-name=test' -o\
+  go-template-file=./go-cli-templates/migmigration-completed-list.template
   ```
-  
+
   **Example output**
+  ```yaml
+  Name:       51886050-6d52-11eb-98e7-b515603f1bc7
+  Migplan:    test
+  Result:     SucceededWithWarnings
+
+  Name:       b4d045f0-6d58-11eb-98e7-b515603f1bc7
+  Migplan:    test
+  Result:     SucceededWithWarnings
   ```
-    Name:       51886050-6d52-11eb-98e7-b515603f1bc7
-    Migplan:    test
-    Result:     SucceededWithWarnings 
 
+  The `Result` parameter indicates a status of `Succeeded`, `SucceededWithWarnings`, or `Failed`.
 
-    Name:       b4d045f0-6d58-11eb-98e7-b515603f1bc7
-    Migplan:    test
-    Result:     SucceededWithWarnings 
-  ```
-  
-  It could be concluded from the above output if any of the migration
-   Succeeded, SucceededWithWarnings or Failed.
-
-- To view the warnings of all the completed migmigration associated with the
-   `test` migration plan:
-   ```sh
-   $ oc get migmigration -l 'migration.openshift.io/migplan-name=test' -o \
+- To view the warnings of all completed `migmigration` resources associated with the `test` migration plan:
+  ```sh
+  $ oc get migmigration -l 'migration.openshift.io/migplan-name=test' -o \
   go-template-file=go-cli-templates/migmigration-display-warning-list.template
-   ```
-  
+  ```
+
   **Example output**
+  ```yaml
+  Name:       51886050-6d52-11eb-98e7-b515603f1bc7
+  Migplan:    test
+  Warning:    DirectVolumeMigrationFailed
+      Message:        DirectVolumeMigration (dvm): openshift-migration/51886050-6d52-11eb-98e7-b515603f1bc7-z9zfj failed. See in dvm status.Errors
+  errors:     <no value>
+
+  Name:       b4d045f0-6d58-11eb-98e7-b515603f1bc7
+  Migplan:    test
+  Warning:    DirectVolumeMigrationFailed
+      Message:        DirectVolumeMigration (dvm): openshift-migration/b4d045f0-6d58-11eb-98e7-b515603f1bc7-4c894 failed. See in dvm status.Errors
+  errors:     <no value>
   ```
-      Name:       51886050-6d52-11eb-98e7-b515603f1bc7
-      Migplan:    test
-      Warning:    DirectVolumeMigrationFailed
-          Message:        DirectVolumeMigration (dvm): openshift-migration/51886050-6d52-11eb-98e7-b515603f1bc7-z9zfj failed. See in dvm status.Errors
-      errors:     <no value>
-  
-  
-      Name:       b4d045f0-6d58-11eb-98e7-b515603f1bc7
-      Migplan:    test
-      Warning:    DirectVolumeMigrationFailed
-          Message:        DirectVolumeMigration (dvm): openshift-migration/b4d045f0-6d58-11eb-98e7-b515603f1bc7-4c894 failed. See in dvm status.Errors
-      errors:     <no value>
-  ```
-  
-  The above command can help in determining what caused the warning or
-  failure. If a migration SucceededWithWarnings, look at the `Warning` field.
-  If the previous output showed a migration failed, look at the `errors`
-  field.
 
 - To list all `Backup` resources:
   ```sh
@@ -142,42 +132,33 @@ You can view the migration debug tree and query specific label selectors.
   $ oc describe backup 88435fe0-c9f8-11e9-85e6-5d593ce65e10 -n openshift-migration
   ```
 
-- It is possible the failure of migmigration is caused by
- directvolumemigration, in order to get the list of failed
-  directvolumemigration, grep the UID from the above output of
-   failed migrations:
+- To list failed migrations caused by direct volume migration failures:
   ```sh
-   oc get dvm -l migmigration=<uid>
+  $ oc get dvm -l migmigration=<uid>
   ```
-  
+
   **Example Output**
-  ```
+  ```sh
   NAME                                         AGE
   b4d045f0-6d58-11eb-98e7-b515603f1bc7-4c894   5d21h
   ```
 
-- To see the failure list of dvms for a migmigration and their reasons:
+- To list the direct volume migration failures and their causes:
   ```sh
   $ oc get dvm -l migmigration=<uid> \
-   -o go-template-file=go-cli-templates/dvm-display-failure-list.template
+  -o go-template-file=go-cli-templates/dvm-display-failure-list.template
   ```
-  
+
   **Example Output**
+  ```yaml
+  Name:       b4d045f0-6d58-11eb-98e7-b515603f1bc7-4c894
+
+      State:  Failed
+      Phase:  WaitForRsyncClientPodsCompleted
+      Message:        The migration has failed.  See: Errors.
+
+  errors:     [One or more pods are in error state]
   ```
-  
-    Name:       b4d045f0-6d58-11eb-98e7-b515603f1bc7-4c894
-    
-        
-        State:  Failed
-        Phase   WaitForRsyncClientPodsCompleted
-        Message:        The migration has failed.  See: Errors.
-        
-    
-    errors:     [One or more pods are in error state]
------
-  ```
-  
-  
 
 See [Viewing migration custom resources](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/troubleshooting-3-4.html#migration-viewing-migration-crs_migrating-3-4) for more information.
 
@@ -377,7 +358,7 @@ buckets of errors:
   running or route is admitted. When the pods are stuck in a non-healthy
   state, you will find a Warning in 10 mins of DVM being stuck here. Use
   the dvm command to see warning on the dvm status
-     
+
 3. Rsync exits with error: this happens when all the dependencies are met
  and healthy and the rysnc fail because of some reason. The dvm controller
   does not clean up the failed rsync client pods so the logs can be inspected.
