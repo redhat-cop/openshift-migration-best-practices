@@ -4,7 +4,9 @@ Check <https://redhat-cop.github.io/openshift-migration-best-practices/> for the
 
 ## Contributing
 
-You can test the changes to this repository via a container:
+Read the [Guidelines for Red Hat Documentation](https://redhat-documentation.github.io/) before opening a pull request.
+
+You can test the changes to this repository via a container.
 
 ### Run a Jekyll container
 
