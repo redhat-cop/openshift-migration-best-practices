@@ -9,4 +9,4 @@ This guide provides recommendations and best practices for migrating from OpenSh
 
 Feel free to raise issues or submit pull requests on the repository: <https://github.com/redhat-cop/openshift-migration-best-practices/>.
 
-**DISCLAIMER:** This document is not a Red Hat supported document. For supported documentation please use the [Migration Toolkit for Containers official documentation](https://access.redhat.com/documentation/en-us/openshift_container_platform/4.5/html/migration_toolkit_for_containers/index).
+**DISCLAIMER:** This document is not a Red Hat supported document. For supported documentation please use the [Migration Toolkit for Containers official documentation](https://access.redhat.com/documentation/en-us/openshift_container_platform/4.7/html/migration_toolkit_for_containers/index).

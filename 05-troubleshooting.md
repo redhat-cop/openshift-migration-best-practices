@@ -160,7 +160,7 @@ You can view the migration debug tree and query specific label selectors.
   errors:     [One or more pods are in error state]
   ```
 
-See [Viewing migration custom resources](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/troubleshooting-3-4.html#migration-viewing-migration-crs_migrating-3-4) for more information.
+See [Viewing migration custom resources](https://docs.openshift.com/container-platform/4.7/migration/migrating_3_4/troubleshooting-3-4.html#migration-viewing-migration-crs_migrating-3-4) for more information.
 
 ## Debugging `backup` and `restore` resources with the Velero CLI
 
@@ -286,7 +286,7 @@ The following error message might appear when you log in to the MTC console for 
 
 ```
 A certificate error has occurred, likely caused by using self-signed CA certificates in one of the clusters. Navigate to the following URL and accept the certificate:
-`https://ocp-cluster.com:6443/.well-known/oauth-authorization-server`.
+`https://www.example.com:6443/.well-known/oauth-authorization-server`.
 
 If an "Unauthorized" message appears after you have accepted the certificate, refresh the web page.
 
@@ -462,7 +462,7 @@ The following procedure removes the MTC Operator and cluster-scoped resources:
 
 2. Uninstall the MTC Operator:
 
-   - OpenShift 4: Uninstall the Operator in the [web console](https://docs.openshift.com/container-platform/4.6/operators/olm-deleting-operators-from-cluster.html) or by running the following command:
+   - OpenShift 4: Uninstall the Operator in the [web console](https://docs.openshift.com/container-platform/4.7/operators/olm-deleting-operators-from-cluster.html) or by running the following command:
 
    ```sh
    $ oc delete ns openshift-migration

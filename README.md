@@ -34,4 +34,4 @@ You can test the changes to this repository via a container.
 
 ### View the site
 
-Visit `http://0.0.0.0:4000` in your local browser.
+Visit `http://<localhost>:4000` in your local browser.

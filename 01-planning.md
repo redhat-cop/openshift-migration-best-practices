@@ -48,9 +48,9 @@ If you can redeploy your application from pipeline, that is the best option. If 
 
 #### MTC documentation
 
-- [Prerequisites](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-prerequisites_migrating-3-4)
-- [About MTC](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-understanding-cam_migrating-3-4)
-- [About data copy methods](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-understanding-data-copy-methods_migrating-3-4)
+- [Prerequisites](https://docs.openshift.com/container-platform/4.7/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-prerequisites_migrating-3-4)
+- [About MTC](https://docs.openshift.com/container-platform/4.7/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-understanding-cam_migrating-3-4)
+- [About data copy methods](https://docs.openshift.com/container-platform/4.7/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-understanding-data-copy-methods_migrating-3-4)
 
 ## Migration environment considerations
 
@@ -58,10 +58,10 @@ OpenShift 4 introduces architectural changes and enhancements. The procedures th
 
 You should review the following considerations:
 
-- Important differences between OpenShift 3 and 4 and their impact on migration ([Architecture](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/planning-migration-3-to-4.html#migration-differences-architecture), [Installation and update](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/planning-migration-3-to-4.html#migration-differences-install))
-- How stored data will be migrated for stateful applications ([Storage](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/planning-migration-3-to-4.html#migration-preparing-storage))
-- How much downtime your application can tolerate during migration ([Networking](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/planning-migration-3-to-4.html#migration-preparing-networking))
-- How traffic will be redirected during migration ([Logging](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/planning-migration-3-to-4.html#migration-preparing-logging), [Security](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/planning-migration-3-to-4.html#migration-preparing-security), [Monitoring](https://docs.openshift.com/container-platform/4.6/migration/migrating_3_4/planning-migration-3-to-4.html#migration-preparing-monitoring), [DNS](#dns-considerations))
+- Important differences between OpenShift 3 and 4 and their impact on migration ([Architecture](https://docs.openshift.com/container-platform/4.7/migration/migrating_3_4/planning-migration-3-to-4.html#migration-differences-architecture), [Installation and update](https://docs.openshift.com/container-platform/4.7/migration/migrating_3_4/planning-migration-3-to-4.html#migration-differences-install))
+- How stored data will be migrated for stateful applications ([Storage](https://docs.openshift.com/container-platform/4.7/migration/migrating_3_4/planning-migration-3-to-4.html#migration-preparing-storage))
+- How much downtime your application can tolerate during migration ([Networking](https://docs.openshift.com/container-platform/4.7/migration/migrating_3_4/planning-migration-3-to-4.html#migration-preparing-networking))
+- How traffic will be redirected during migration ([Logging](https://docs.openshift.com/container-platform/4.7/migration/migrating_3_4/planning-migration-3-to-4.html#migration-preparing-logging), [Security](https://docs.openshift.com/container-platform/4.7/migration/migrating_3_4/planning-migration-3-to-4.html#migration-preparing-security), [Monitoring](https://docs.openshift.com/container-platform/4.7/migration/migrating_3_4/planning-migration-3-to-4.html#migration-preparing-monitoring), [DNS](#dns-considerations))
 
 ## DNS considerations
 
@@ -69,7 +69,7 @@ In a typical migration scenario, the DNS domain of the OpenShift 4 target cluste
 
 If the source cluster uses the base domain **ocp3.example.com** and if the default domain of the applications is **\*.apps.ocp3.example.com**, unless special measures are taken, the target cluster must be deployed on a different domain to avoid conflicts: **ocp4.example.com**, with the default applications defined as **\*.apps.ocp4.example.com**.
 
-An application that uses the URL **http://app1.apps.ocp3.example.com** in the source cluster will, after migration, use the URL **http://app1.apps.ocp4.example.com**. In most cases, this is not a desirable result. The application clients must discover the new URL and adapt to it, which may not be a trivial or convenient thing to do.
+An application that uses the URL `http://app1.apps.ocp3.example.com` in the source cluster will, after migration, use the URL `http://app1.apps.ocp4.example.com`. In most cases, this is not a desirable result. The application clients must discover the new URL and adapt to it, which may not be a trivial or convenient thing to do.
 
 If preserving the DNS domain of migrated applications is a requirement, several options are possible.
 
@@ -126,7 +126,7 @@ You can set up the target cluster to accept requests for migrated applications i
 
   If the application requires a TLS/HTTPS connection, an additional step is required after you have created the route and DNS records:
 
-  - Replace the [x509 certificate of the default ingress controller](https://docs.openshift.com/container-platform/4.6/security/certificates/replacing-default-ingress-certificate.html) created during the installation process with a custom certificate that includes the wildcard DNS domains for both the source and target clusters in the Subject Alternative Name (SAN) field. The new certificate will be valid for securing connections made using either of the two DNS domains.
+  - Replace the [x509 certificate of the default ingress controller](https://docs.openshift.com/container-platform/4.7/security/certificates/replacing-default-ingress-certificate.html) created during the installation process with a custom certificate that includes the wildcard DNS domains for both the source and target clusters in the Subject Alternative Name (SAN) field. The new certificate will be valid for securing connections made using either of the two DNS domains.
 
   The certificate must be updated when it approaches its expiration date.
 
