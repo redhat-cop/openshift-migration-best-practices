@@ -82,7 +82,7 @@ You can perform the following health checks on an OpenShift 4.x target cluster:
 - The clusters require additional memory, CPUs, and storage in order to run a migration on top of normal workloads. Actual resource requirements depend on the number of Kubernetes resources being migrated in a single migration plan.
 - Check that the OpenShift 3.9+ source cluster meets the [minimum hardware requirements](https://docs.openshift.com/container-platform/3.11/install/prerequisites.html#hardware) for an OpenShift installation.
 - Check that the OpenShift 4.x target cluster meets the minimum hardware requirements for the specific platform and installation method. For example, a bare metal installation has [specific minimum resource requirements](https://docs.openshift.com/container-platform/4.7/installing/installing_bare_metal/installing-bare-metal.html#minimum-resource-requirements_installing-bare-metal).
-- Verify that the OpenShift 4.x target cluster contains storage classes for the same types (block, file, object) as the OpenShift 3.9+ source cluster. In particular verify that the default storage class is of the same type in both clusters.
+- Verify that the OpenShift 4.x target cluster contains storage classes for the same types (block, file, object) as the OpenShift 3.9+ source cluster.
 - Check the available bandwidth between the source and target clusters. Less than 10 Gbps is not recommended.
 - If you are migrating more than 20 TB, check that the target cluster and the replication repository have sufficient storage.
 
