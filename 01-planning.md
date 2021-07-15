@@ -48,9 +48,10 @@ If you can redeploy your application from pipeline, that is the best option. If 
 
 #### MTC documentation
 
-- [Prerequisites](https://docs.openshift.com/container-platform/4.7/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-prerequisites_migrating-3-4)
-- [About MTC](https://docs.openshift.com/container-platform/4.7/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-understanding-cam_migrating-3-4)
-- [About data copy methods](https://docs.openshift.com/container-platform/4.7/migration/migrating_3_4/migrating-application-workloads-3-4.html#migration-understanding-data-copy-methods_migrating-3-4)
+- [Prerequisites](https://access.redhat.com/articles/5064151)
+- [About MTC on OpenShift 3](https://access.redhat.com/articles/5064151#installing-the-mtc-with-the-web-console-and-the-migration-controller-on-a-4x-remote-cluster-2)
+- [About MTC on OpenShift 4](https://docs.openshift.com/container-platform/4.6/migration-toolkit-for-containers/installing-mtc.html)
+- [About data copy methods](https://docs.openshift.com/container-platform/4.6/migration-toolkit-for-containers/about-mtc.html#migration-understanding-data-copy-methods_about-mtc)
 
 ## Migration environment considerations
 

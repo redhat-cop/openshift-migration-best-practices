@@ -462,7 +462,7 @@ The following procedure removes the MTC Operator and cluster-scoped resources:
 
 2. Uninstall the MTC Operator:
 
-   - OpenShift 4: Uninstall the Operator in the [web console](https://docs.openshift.com/container-platform/4.7/operators/olm-deleting-operators-from-cluster.html) or by running the following command:
+   - OpenShift 4: Uninstall the Operator in the [web console](https://docs.openshift.com/container-platform/4.6/operators/olm-deleting-operators-from-cluster.html) or by running the following command:
 
    ```sh
    $ oc delete ns openshift-migration

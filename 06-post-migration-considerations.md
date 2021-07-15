@@ -73,6 +73,6 @@ You can learn more about how to create your own operators in the [Building Opera
 You can continue learning about operators in the following resources:
 
 - [OpenShift 4 Operators Documentation](https://docs.openshift.com/container-platform/4.7/operators/understanding/olm-what-operators-are.html)
-- [OpenShift 4 Getting started with the Operator SDK](https://docs.openshift.com/container-platform/4.7/operators/operator_sdk/osdk-getting-started.html)
+- [OpenShift 4 Getting started with the Operator SDK](https://docs.openshift.com/container-platform/4.6/operators/operator_sdk/osdk-getting-started.html)
 - [OpenShift Learn Operators](https://www.openshift.com/learn/topics/operators)
 - [Operator SDK Documentation](https://sdk.operatorframework.io/)

@@ -25,9 +25,9 @@ Prepare your migration environment by checking the following:
   - Check whether your application uses a service network or an external route to communicate with services.
   - If your application uses non-namespaced resources, you must re-create them on the target cluster.
   - You must migrate images from the internal image registry if you are not using an external image registry. If they cannot be migrated, you must re-create them manually on the target cluster.
-  - Increase the [CPU and memory limits of the Migration Controller](https://docs.openshift.com/container-platform/4.7/migration/migrating_3_4/migrating-applications-with-cam-3-4.html#migration-changing-migration-plan-limits_migrating-3-4) for large migrations.
+  - Check the prerequisites [MTC configuration](https://docs.openshift.com/container-platform/4.7/migration-toolkit-for-containers/migrating-applications-with-mtc.html) for the migration, do increase CPU and memory allocation for large migrations.
   - Use the [`prune` command](https://docs.openshift.com/container-platform/4.7/applications/pruning-objects.html) to remove old builds, deployments, and images from each namespace being migrated.
-  - [Exclude PVs, image streams, and other resources](https://docs.openshift.com/container-platform/4.7/migration/migrating_3_4/migrating-applications-with-cam-3-4.html#migration-excluding-resources_migrating-3-4) if you do not want to migrate them with MTC.
+  - [Exclude PVs, image streams, and other resources from the migration plan](https://access.redhat.com/documentation/en-us/openshift_container_platform/4.7/html/migration_toolkit_for_containers/migrating-from-openshift-container-platform-3#configuring-migration-plan_migrating-3-4) if you do not want to migrate them with MTC.
 - Namespaces:
   - Check the namespaces on the target cluster to ensure that they do not duplicate namespaces being migrated.
   - Do not create namespaces for your application on the target cluster before migration because this can cause quotas to change.
