@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: /openshift-migration-best-practices/sitemap.xml
